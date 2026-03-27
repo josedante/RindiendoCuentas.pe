@@ -1,0 +1,84 @@
+---
+/**
+ * LawSection.astro — Reusable wrapper for each law's section.
+ *
+ * Renders a summary card with key metadata (law name, date, approval
+ * mechanism, fiscal impact) followed by a slot for narrative content,
+ * vote chart, and behavioral analysis.
+ *
+ * @prop {string} id — Anchor slug for deep-linking (e.g. "beneficios-cas").
+ * @prop {string} shortName — Display name for header and TOC reference.
+ * @prop {string} fullName — Official full name of the law/bill.
+ * @prop {string} lawNumber — Official law number, or null.
+ * @prop {string} date — ISO 8601 vote date.
+ * @prop {string} mechanism — Human-readable approval mechanism label.
+ * @prop {string} fiscalImpact — Brief fiscal impact description.
+ * @prop {number} index — 1-based index for visual numbering.
+ */
+
+import { mechanismLabels } from '../data/laws';
+import type { ApprovalMechanism } from '../data/types';
+
+interface Props {
+  id: string;
+  shortName: string;
+  fullName: string;
+  lawNumber: string | null;
+  date: string;
+  mechanism: ApprovalMechanism;
+  fiscalImpact: string;
+  index: number;
+}
+
+const { id, shortName, fullName, lawNumber, date, mechanism, fiscalImpact, index } = Astro.props;
+
+const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString('es-PE', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const mechanismLabel = mechanismLabels[mechanism] ?? mechanism;
+
+const mechanismColor: Record<string, string> = {
+  insistencia: 'bg-red-100 text-red-800',
+  promulgacion: 'bg-blue-100 text-blue-800',
+  aprobacion: 'bg-emerald-100 text-emerald-800',
+};
+---
+
+<section id={id} class="scroll-mt-20 py-12">
+  <!-- Section header -->
+  <div class="mb-6 flex items-baseline gap-3">
+    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white">
+      {index}
+    </span>
+    <div>
+      <h2 class="text-2xl font-bold text-slate-900 lg:text-3xl">{shortName}</h2>
+      <p class="mt-1 text-sm text-slate-500">{fullName}</p>
+    </div>
+  </div>
+
+  <!-- Summary card -->
+  <div class="mb-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex flex-wrap gap-3 text-sm">
+      {lawNumber && (
+        <span class="rounded-full bg-slate-100 px-3 py-1 font-medium text-slate-700">
+          Ley N.° {lawNumber}
+        </span>
+      )}
+      <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+        {formattedDate}
+      </span>
+      <span class={`rounded-full px-3 py-1 font-medium ${mechanismColor[mechanism] ?? 'bg-slate-100 text-slate-700'}`}>
+        {mechanismLabel}
+      </span>
+    </div>
+    <p class="mt-4 text-sm leading-relaxed text-slate-600">
+      <span class="font-semibold text-slate-800">Impacto fiscal:</span> {fiscalImpact}
+    </p>
+  </div>
+
+  <!-- Slot for context narrative, vote chart/table, and analysis -->
+  <slot />
+</section>

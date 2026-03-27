@@ -1,0 +1,41 @@
+---
+/**
+ * Header.astro — Site-wide top navigation bar.
+ *
+ * Fixed at the top of the viewport. Contains the site brand name
+ * and a mobile menu toggle button that dispatches a custom event
+ * consumed by TableOfContents to open the mobile drawer.
+ */
+---
+
+<header
+  class="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">
+    <a href="/" class="flex items-center gap-2 text-slate-900 no-underline">
+      <span class="text-xl font-extrabold tracking-tight">
+        Rindiendo<span class="text-accent">Cuentas</span>
+      </span>
+      <span class="hidden text-xs font-medium tracking-wide text-slate-400 sm:inline">.pe</span>
+    </a>
+
+    <!-- Mobile TOC toggle — dispatches event for TableOfContents drawer -->
+    <button
+      id="mobile-toc-toggle"
+      type="button"
+      class="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+      aria-label="Abrir tabla de contenidos"
+    >
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('mobile-toc-toggle');
+  toggle?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('toggle-mobile-toc'));
+  });
+</script>

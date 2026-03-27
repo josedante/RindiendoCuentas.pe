@@ -1,0 +1,96 @@
+---
+/**
+ * VoteDisplay.astro — Toggle wrapper that switches between chart and table views.
+ *
+ * Provides two tab buttons ("Ver gráfico" / "Ver tabla") and renders both
+ * VoteChart and VoteTable, toggling visibility via data attributes.
+ * Default view is the chart.
+ *
+ * @prop {PartyVote[]} votes — Per-party vote tallies.
+ * @prop {string} lawId — Unique law identifier for scoping.
+ */
+
+import type { PartyVote } from '../data/types';
+import VoteChart from './VoteChart.astro';
+import VoteTable from './VoteTable.astro';
+
+interface Props {
+  votes: PartyVote[];
+  lawId: string;
+}
+
+const { votes, lawId } = Astro.props;
+---
+
+<div class="vote-display mt-6" data-display-id={lawId}>
+  <!-- Toggle tabs -->
+  <div class="mb-4 flex gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Alternar vista">
+    <button
+      role="tab"
+      aria-selected="true"
+      class="vote-tab active-tab flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+      data-target="chart"
+    >
+      Ver gráfico
+    </button>
+    <button
+      role="tab"
+      aria-selected="false"
+      class="vote-tab flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+      data-target="table"
+    >
+      Ver tabla
+    </button>
+  </div>
+
+  <!-- Chart panel (visible by default) -->
+  <div class="vote-panel" data-panel="chart">
+    <VoteChart votes={votes} lawId={lawId} />
+  </div>
+
+  <!-- Table panel (hidden by default) -->
+  <div class="vote-panel hidden" data-panel="table">
+    <VoteTable votes={votes} lawId={lawId} />
+  </div>
+</div>
+
+<style>
+  .vote-tab {
+    color: var(--color-slate-500);
+    background: transparent;
+  }
+  .vote-tab.active-tab {
+    color: var(--color-slate-900);
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('.vote-display').forEach((display) => {
+    const tabs = display.querySelectorAll('.vote-tab');
+    const panels = display.querySelectorAll('.vote-panel');
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = (tab as HTMLElement).dataset.target;
+
+        tabs.forEach((t) => {
+          t.classList.remove('active-tab');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active-tab');
+        tab.setAttribute('aria-selected', 'true');
+
+        panels.forEach((p) => {
+          const panel = p as HTMLElement;
+          if (panel.dataset.panel === target) {
+            panel.classList.remove('hidden');
+          } else {
+            panel.classList.add('hidden');
+          }
+        });
+      });
+    });
+  });
+</script>

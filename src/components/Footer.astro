@@ -1,0 +1,60 @@
+---
+/**
+ * Footer.astro — Site footer with methodology note, sources, and credits.
+ *
+ * Lists the primary sources used for vote data reconstruction
+ * and provides a disclaimer about the nature of the analysis.
+ */
+
+const sources = [
+  { label: 'Asistencia y Votaciones del Pleno', url: 'https://www.congreso.gob.pe/labor-legislativa/asistencias-votaciones-y-descuentos-por-inasistencias/asistencia-y-votaciones-a-las-sesiones-del-pleno/' },
+  { label: 'Comunicaciones del Congreso', url: 'https://comunicaciones.congreso.gob.pe/' },
+  { label: 'Diario Oficial El Peruano', url: 'https://elperuano.pe/' },
+  { label: 'Plataforma del Estado Peruano', url: 'https://www.gob.pe/' },
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 bg-white">
+  <div class="mx-auto max-w-4xl px-4 py-12 lg:px-8">
+    <!-- Methodology -->
+    <div class="mb-8">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900">Metodología</h3>
+      <p class="mt-2 text-sm leading-relaxed text-slate-600">
+        Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno,
+        las resoluciones legislativas, y el Diario de los Debates del Congreso de la República
+        del Perú. Los registros corresponden a las sesiones plenarias del mes de marzo de 2026.
+      </p>
+    </div>
+
+    <!-- Sources -->
+    <div class="mb-8">
+      <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900">Fuentes primarias</h3>
+      <ul class="mt-2 space-y-1">
+        {sources.map((s) => (
+          <li>
+            <a
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm text-slate-500 underline decoration-slate-300 hover:text-slate-700"
+            >
+              {s.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- Credits -->
+    <div class="border-t border-slate-100 pt-6 text-xs text-slate-400">
+      <p>
+        &copy; {currentYear} RindiendoCuentas.pe — Proyecto de transparencia y fiscalización ciudadana.
+      </p>
+      <p class="mt-1">
+        Este sitio no tiene afiliación con el Congreso de la República ni con ningún grupo parlamentario.
+      </p>
+    </div>
+  </div>
+</footer>

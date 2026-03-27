@@ -1,0 +1,160 @@
+---
+/**
+ * VoteChart.astro — Interactive horizontal stacked bar chart for a single law's votes.
+ *
+ * Renders a <canvas> element and initializes Chart.js via a client-side <script>.
+ * Uses IntersectionObserver to lazily initialize the chart only when scrolled
+ * into view, improving initial page load performance.
+ *
+ * The vote data is passed from the server (Astro frontmatter) to the client
+ * via a data-votes attribute on the canvas wrapper (JSON-serialized).
+ *
+ * @prop {PartyVote[]} votes — Array of per-party vote tallies.
+ * @prop {string} lawId — Unique law identifier, used to scope the canvas element.
+ */
+
+import type { PartyVote } from '../data/types';
+
+interface Props {
+  votes: PartyVote[];
+  lawId: string;
+}
+
+const { votes, lawId } = Astro.props;
+
+// Sort by total votes descending so the largest groups appear first
+const sorted = [...votes].sort(
+  (a, b) => (b.aFavor + b.enContra + b.abstencion) - (a.aFavor + a.enContra + a.abstencion),
+);
+
+const chartData = JSON.stringify(sorted);
+---
+
+<div
+  class="vote-chart-wrapper"
+  data-law-id={lawId}
+  data-votes={chartData}
+>
+  <canvas
+    id={`chart-${lawId}`}
+    class="w-full"
+    role="img"
+    aria-label={`Gráfico de votación para ${lawId}`}
+  ></canvas>
+</div>
+
+<script>
+  import { Chart, registerables } from 'chart.js';
+  Chart.register(...registerables);
+
+  interface VoteData {
+    party: string;
+    aFavor: number;
+    enContra: number;
+    abstencion: number;
+  }
+
+  /**
+   * Initializes a horizontal stacked bar chart for a single law.
+   * Called lazily via IntersectionObserver when the element enters the viewport.
+   */
+  function initChart(wrapper: HTMLElement) {
+    const lawId = wrapper.dataset.lawId;
+    const votes: VoteData[] = JSON.parse(wrapper.dataset.votes || '[]');
+    const canvas = wrapper.querySelector('canvas') as HTMLCanvasElement | null;
+    if (!canvas || !lawId || votes.length === 0) return;
+
+    const labels = votes.map((v) => v.party);
+    // Truncate long party names for chart readability
+    const shortLabels = labels.map((l) =>
+      l.length > 25 ? l.substring(0, 22) + '…' : l,
+    );
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Dynamic height: 32px per bar + padding
+    canvas.style.height = `${votes.length * 36 + 60}px`;
+
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: shortLabels,
+        datasets: [
+          {
+            label: 'A Favor',
+            data: votes.map((v) => v.aFavor),
+            backgroundColor: '#059669',
+            borderRadius: 2,
+          },
+          {
+            label: 'En Contra',
+            data: votes.map((v) => v.enContra),
+            backgroundColor: '#e11d48',
+            borderRadius: 2,
+          },
+          {
+            label: 'Abstención',
+            data: votes.map((v) => v.abstencion),
+            backgroundColor: '#f59e0b',
+            borderRadius: 2,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 12 },
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+            },
+          },
+          tooltip: {
+            callbacks: {
+              // Show full party name in tooltip even if label was truncated
+              title: (items) => labels[items[0].dataIndex] || '',
+            },
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              stepSize: 2,
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { color: '#e2e8f0' },
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+  }
+
+  // Lazy initialization: only create charts when scrolled into view
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          initChart(entry.target as HTMLElement);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { rootMargin: '100px' },
+  );
+
+  document.querySelectorAll('.vote-chart-wrapper').forEach((el) => observer.observe(el));
+</script>

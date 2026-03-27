@@ -1,0 +1,70 @@
+---
+/**
+ * HeroSection.astro — Above-the-fold hero with title and key stats.
+ *
+ * Provides the reader with immediate context: what this report covers,
+ * the date range, and aggregate statistics across all 5 laws.
+ */
+
+import { laws, getTotals } from '../data/laws';
+
+const totalLaws = laws.length;
+const aggregated = laws.reduce(
+  (acc, law) => {
+    const t = getTotals(law);
+    return {
+      aFavor: acc.aFavor + t.aFavor,
+      enContra: acc.enContra + t.enContra,
+      abstencion: acc.abstencion + t.abstencion,
+    };
+  },
+  { aFavor: 0, enContra: 0, abstencion: 0 },
+);
+const totalVotes = aggregated.aFavor + aggregated.enContra + aggregated.abstencion;
+const approvalRate = ((aggregated.aFavor / totalVotes) * 100).toFixed(1);
+
+// Count how many were approved "por insistencia" (overriding executive veto)
+const byInsistencia = laws.filter((l) => l.mechanism === 'insistencia').length;
+---
+
+<section class="relative overflow-hidden bg-slate-900 px-4 py-16 text-white sm:py-24 lg:px-8">
+  <!-- Subtle grid background pattern -->
+  <div
+    class="pointer-events-none absolute inset-0 opacity-5"
+    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+  ></div>
+
+  <div class="relative mx-auto max-w-4xl">
+    <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-slate-400">
+      Investigación · Marzo 2026
+    </p>
+    <h1 class="text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-5xl">
+      Votaciones del Congreso sobre Leyes de Expansión del Gasto Público
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+      Análisis estructural y registro nominal de las votaciones en el Pleno del Congreso de la
+      República del Perú durante marzo de 2026, un mes de inusitada hiperactividad legislativa en
+      vísperas de las elecciones generales de abril.
+    </p>
+
+    <!-- Key stats strip -->
+    <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+        <p class="text-3xl font-bold">{totalLaws}</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">Leyes analizadas</p>
+      </div>
+      <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+        <p class="text-3xl font-bold">{totalVotes}</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">Votos emitidos</p>
+      </div>
+      <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+        <p class="text-3xl font-bold">{approvalRate}%</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">Tasa de aprobación</p>
+      </div>
+      <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+        <p class="text-3xl font-bold">{byInsistencia}/{totalLaws}</p>
+        <p class="mt-1 text-xs font-medium text-slate-400">Por insistencia</p>
+      </div>
+    </div>
+  </div>
+</section>

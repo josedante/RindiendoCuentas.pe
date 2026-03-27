@@ -1,0 +1,152 @@
+---
+/**
+ * TableOfContents.astro — Sticky sidebar navigation with scroll-spy.
+ *
+ * On desktop (lg+): renders as a fixed sidebar on the left side.
+ * On mobile (<lg): renders as an overlay drawer triggered by the
+ * 'toggle-mobile-toc' custom event dispatched from Header.astro.
+ *
+ * Scroll-spy uses IntersectionObserver to highlight the currently
+ * visible section as the user scrolls through the report.
+ *
+ * @prop {TocItem[]} items — Array of {id, label} for each section.
+ */
+
+interface TocItem {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  items: TocItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<!-- Desktop sidebar -->
+<nav
+  id="toc-sidebar"
+  class="fixed top-16 left-0 hidden h-[calc(100vh-4rem)] w-64 overflow-y-auto border-r border-slate-200 bg-white px-4 py-8 lg:block"
+  aria-label="Tabla de contenidos"
+>
+  <p class="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400">Contenido</p>
+  <ul class="space-y-1">
+    {items.map((item) => (
+      <li>
+        <a
+          href={`#${item.id}`}
+          class="toc-link block rounded-md px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+          data-toc-target={item.id}
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<!-- Mobile drawer overlay -->
+<div
+  id="toc-mobile-overlay"
+  class="fixed inset-0 z-50 hidden bg-black/40 backdrop-blur-sm lg:hidden"
+  aria-hidden="true"
+>
+  <nav
+    id="toc-mobile-drawer"
+    class="absolute top-0 left-0 h-full w-72 translate-x-0 bg-white px-4 py-6 shadow-xl transition-transform"
+    aria-label="Tabla de contenidos"
+  >
+    <div class="mb-4 flex items-center justify-between">
+      <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Contenido</p>
+      <button
+        id="toc-mobile-close"
+        type="button"
+        class="rounded-md p-1 text-slate-400 hover:text-slate-700"
+        aria-label="Cerrar"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <ul class="space-y-1">
+      {items.map((item) => (
+        <li>
+          <a
+            href={`#${item.id}`}
+            class="toc-link-mobile block rounded-md px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
+            data-toc-target={item.id}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .toc-link-active {
+    color: var(--color-slate-900);
+    background-color: var(--color-slate-100);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  // ── Scroll-spy ──────────────────────────────────────────────────────
+  // Watches each section's intersection with the viewport and highlights
+  // the corresponding TOC link. Uses a 20% top threshold so the active
+  // item updates just before the section header reaches the top.
+  const allLinks = document.querySelectorAll('.toc-link, .toc-link-mobile');
+  const sectionIds = Array.from(new Set(
+    Array.from(allLinks).map((a) => (a as HTMLElement).dataset.tocTarget).filter(Boolean),
+  ));
+
+  const spyObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const id = entry.target.id;
+        const links = document.querySelectorAll(`[data-toc-target="${id}"]`);
+        links.forEach((link) => {
+          if (entry.isIntersecting) {
+            // Clear all, then set active
+            allLinks.forEach((l) => l.classList.remove('toc-link-active'));
+            link.classList.add('toc-link-active');
+          }
+        });
+      });
+    },
+    { rootMargin: '-20% 0px -75% 0px' },
+  );
+
+  sectionIds.forEach((id) => {
+    const el = document.getElementById(id!);
+    if (el) spyObserver.observe(el);
+  });
+
+  // ── Mobile drawer toggle ────────────────────────────────────────────
+  const overlay = document.getElementById('toc-mobile-overlay');
+  const closeBtn = document.getElementById('toc-mobile-close');
+
+  function openDrawer() {
+    overlay?.classList.remove('hidden');
+    overlay?.setAttribute('aria-hidden', 'false');
+  }
+  function closeDrawer() {
+    overlay?.classList.add('hidden');
+    overlay?.setAttribute('aria-hidden', 'true');
+  }
+
+  document.addEventListener('toggle-mobile-toc', openDrawer);
+  closeBtn?.addEventListener('click', closeDrawer);
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) closeDrawer();
+  });
+
+  // Close drawer when a mobile TOC link is clicked
+  document.querySelectorAll('.toc-link-mobile').forEach((link) => {
+    link.addEventListener('click', closeDrawer);
+  });
+</script>

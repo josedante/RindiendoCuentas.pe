@@ -1,0 +1,203 @@
+---
+/**
+ * ComparisonChart.astro — Cross-law comparison grouped bar chart.
+ *
+ * Shows how each parliamentary group voted across all 5 laws,
+ * enabling readers to spot patterns of consistent support,
+ * opposition, or selective abstention across different bills.
+ *
+ * Renders a grouped bar chart (one group per party, one bar per law)
+ * showing "A Favor" votes. A secondary toggle switches to
+ * "En Contra + Abstención" view for dissent analysis.
+ */
+
+import { laws, partyNames } from '../data/laws';
+
+// Build the matrix: for each party, their "a favor" count per law
+const comparisonData = JSON.stringify({
+  parties: partyNames,
+  laws: laws.map((law) => ({
+    id: law.id,
+    shortName: law.shortName,
+    votes: partyNames.map((name) => {
+      const pv = law.votes.find((v) => v.party === name);
+      return {
+        aFavor: pv?.aFavor ?? 0,
+        enContra: pv?.enContra ?? 0,
+        abstencion: pv?.abstencion ?? 0,
+      };
+    }),
+  })),
+});
+
+// Distinct colors for each of the 5 laws
+const lawColors = [
+  '#1e40af', // blue-800
+  '#059669', // emerald-600
+  '#d97706', // amber-600
+  '#dc2626', // red-600
+  '#7c3aed', // violet-600
+];
+---
+
+<section id="comparacion" class="scroll-mt-20 py-12">
+  <h2 class="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">
+    Comparación entre Leyes
+  </h2>
+  <p class="mb-6 text-sm text-slate-500">
+    Votos «A Favor» de cada grupo parlamentario en las 5 leyes analizadas.
+  </p>
+
+  <!-- View mode toggle -->
+  <div class="mb-4 flex gap-1 rounded-lg bg-slate-100 p-1" role="tablist" aria-label="Modo de comparación">
+    <button
+      role="tab"
+      aria-selected="true"
+      class="comparison-mode-tab active-comparison-tab flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+      data-mode="favor"
+    >
+      Votos a Favor
+    </button>
+    <button
+      role="tab"
+      aria-selected="false"
+      class="comparison-mode-tab flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+      data-mode="dissent"
+    >
+      Disidencia (Contra + Abstención)
+    </button>
+  </div>
+
+  <div
+    class="comparison-chart-wrapper rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+    data-comparison={comparisonData}
+    data-colors={JSON.stringify(lawColors)}
+  >
+    <canvas
+      id="comparison-chart"
+      class="w-full"
+      role="img"
+      aria-label="Gráfico comparativo de votaciones entre las 5 leyes"
+    ></canvas>
+  </div>
+</section>
+
+<style>
+  .comparison-mode-tab {
+    color: var(--color-slate-500);
+    background: transparent;
+  }
+  .comparison-mode-tab.active-comparison-tab {
+    color: var(--color-slate-900);
+    background: white;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+</style>
+
+<script>
+  import { Chart, registerables } from 'chart.js';
+  Chart.register(...registerables);
+
+  interface CompLaw {
+    id: string;
+    shortName: string;
+    votes: { aFavor: number; enContra: number; abstencion: number }[];
+  }
+  interface CompData {
+    parties: string[];
+    laws: CompLaw[];
+  }
+
+  const wrapper = document.querySelector('.comparison-chart-wrapper') as HTMLElement | null;
+  if (wrapper) {
+    const data: CompData = JSON.parse(wrapper.dataset.comparison || '{}');
+    const colors: string[] = JSON.parse(wrapper.dataset.colors || '[]');
+    const canvas = document.getElementById('comparison-chart') as HTMLCanvasElement;
+
+    // Truncate party names for readability
+    const shortParties = data.parties.map((p) =>
+      p.length > 22 ? p.substring(0, 19) + '…' : p,
+    );
+
+    // Dynamic height based on number of parties
+    canvas.style.height = `${data.parties.length * 46 + 80}px`;
+
+    /**
+     * Build Chart.js datasets for either "favor" or "dissent" mode.
+     * In dissent mode, each bar = enContra + abstencion for that law.
+     */
+    function buildDatasets(mode: 'favor' | 'dissent') {
+      return data.laws.map((law, i) => ({
+        label: law.shortName,
+        data: law.votes.map((v) =>
+          mode === 'favor' ? v.aFavor : v.enContra + v.abstencion,
+        ),
+        backgroundColor: colors[i] + (mode === 'dissent' ? '99' : ''),
+        borderColor: colors[i],
+        borderWidth: 1,
+        borderRadius: 3,
+      }));
+    }
+
+    const chart = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: shortParties,
+        datasets: buildDatasets('favor'),
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+              padding: 12,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+            },
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => data.parties[items[0].dataIndex] || '',
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              stepSize: 2,
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { color: '#e2e8f0' },
+          },
+          y: {
+            ticks: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+
+    // Mode toggle logic
+    document.querySelectorAll('.comparison-mode-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const mode = (tab as HTMLElement).dataset.mode as 'favor' | 'dissent';
+
+        document.querySelectorAll('.comparison-mode-tab').forEach((t) => {
+          t.classList.remove('active-comparison-tab');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active-comparison-tab');
+        tab.setAttribute('aria-selected', 'true');
+
+        chart.data.datasets = buildDatasets(mode);
+        chart.update();
+      });
+    });
+  }
+</script>

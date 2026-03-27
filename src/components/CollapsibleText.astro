@@ -1,0 +1,39 @@
+---
+/**
+ * CollapsibleText.astro — Expand/collapse wrapper for long narrative blocks.
+ *
+ * Uses the native <details>/<summary> HTML elements for zero-JS progressive
+ * enhancement. The summary text defaults to "Leer más" / closes to "Ver menos"
+ * via CSS :open pseudo-class.
+ *
+ * @prop {string} [summaryLabel] — Custom label for the collapsed state.
+ */
+
+interface Props {
+  summaryLabel?: string;
+}
+
+const { summaryLabel = 'Leer contexto completo' } = Astro.props;
+---
+
+<details class="group mt-4 rounded-lg border border-slate-200 bg-white">
+  <summary
+    class="flex cursor-pointer items-center gap-2 px-5 py-3 text-sm font-semibold text-slate-600 select-none hover:text-slate-900"
+  >
+    <!-- Chevron rotates when open -->
+    <svg
+      class="h-4 w-4 shrink-0 transition-transform duration-200 group-open:rotate-90"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="2"
+      stroke="currentColor"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </svg>
+    <span class="group-open:hidden">{summaryLabel}</span>
+    <span class="hidden group-open:inline">Ver menos</span>
+  </summary>
+  <div class="px-5 pb-5 pt-2 text-base leading-relaxed text-slate-600">
+    <slot />
+  </div>
+</details>

@@ -1,17 +1,497 @@
 ---
+/**
+ * index.astro — Main (and only) page of the site.
+ *
+ * Assembles the full long-form report as a single-page layout:
+ * Header → Hero → Introduction → 5 Law Sections → Comparison → Conclusion → Footer.
+ * Narrative content is sourced from the original analysis document.
+ * Vote data comes from src/data/laws.ts.
+ */
 
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import HeroSection from '../components/HeroSection.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import LawSection from '../components/LawSection.astro';
+import CollapsibleText from '../components/CollapsibleText.astro';
+import VoteDisplay from '../components/VoteDisplay.astro';
+import ComparisonChart from '../components/ComparisonChart.astro';
+import Footer from '../components/Footer.astro';
+import { laws } from '../data/laws';
+
+const tocItems = [
+  { id: 'introduccion', label: 'Introducción' },
+  { id: 'pensiones-magisteriales', label: '1. Pensiones Magisteriales' },
+  { id: 'beneficios-cas', label: '2. Beneficios Laborales CAS' },
+  { id: 'pensiones-militares', label: '3. Pensiones Militares y Policiales' },
+  { id: 'bono-veteranos', label: '4. Bono Veteranos' },
+  { id: 'nombramiento-cas-salud', label: '5. Nombramiento CAS Salud' },
+  { id: 'comparacion', label: 'Comparación entre Leyes' },
+  { id: 'implicancias', label: 'Implicancias Estructurales' },
+];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Votaciones del Congreso sobre Leyes de Gasto — Marzo 2026">
+  <Header />
+  <TableOfContents items={tocItems} />
+
+  <!-- Main content area — offset for fixed header (pt-16) and sidebar (lg:ml-64) -->
+  <div class="pt-16 lg:ml-64">
+    <HeroSection />
+
+    <main class="mx-auto max-w-4xl px-4 py-12 lg:px-8">
+
+      <!-- ════════════════════════════════════════════════════════════════
+           INTRODUCCIÓN
+           ════════════════════════════════════════════════════════════════ -->
+      <section id="introduccion" class="scroll-mt-20 pb-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">Introducción</h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            El presente informe constituye una investigación analítica exhaustiva sobre el
+            comportamiento del Congreso de la República del Perú durante el mes de marzo de 2026,
+            un periodo de inusitada trascendencia histórica e institucional. La coyuntura temporal
+            no es un detalle menor, dado que el país se encuentra en la recta final hacia las
+            elecciones generales de abril de 2026, comicios que marcarán un hito constitucional al
+            restablecer el sistema parlamentario bicameral, compuesto por un Senado de sesenta
+            escaños y una Cámara de Diputados de ciento treinta representantes distribuidos en
+            veintisiete distritos electorales.
+          </p>
+          <p>
+            Esta inminente transición hacia el bicameralismo ha generado un escenario de
+            hiperactividad legislativa donde los actuales parlamentarios, motivados por incentivos
+            de reelección hacia cualquiera de las dos nuevas cámaras, han adoptado posturas de
+            extrema permeabilidad frente a las demandas de los grupos de interés y los sindicatos
+            del sector público.
+          </p>
+        </div>
+
+        <CollapsibleText>
+          <div class="space-y-4">
+            <p>
+              El eje central de este análisis se circunscribe a la dinámica de aprobación de un
+              paquete de normativas que vulneran directamente el principio fundamental de equilibrio
+              presupuestario. La Constitución Política del Perú, en su artículo 79, establece la
+              prohibición expresa que impide a los representantes ante el Congreso ostentar
+              iniciativa para crear o aumentar gastos públicos, reservando la administración de la
+              hacienda estatal al Poder Ejecutivo a través del Ministerio de Economía y Finanzas
+              (MEF). No obstante, el Parlamento ha perfeccionado diversas metodologías jurídicas
+              para eludir esta restricción constitucional, disfrazando la creación de gasto
+              corriente bajo la figura de restituciones de derechos laborales, nivelaciones de
+              equidad pensionaria y bonificaciones por servicios a la nación.
+            </p>
+            <p>
+              Durante marzo de 2026, esta tendencia colisionó frontalmente con la prudencia fiscal
+              del Estado, resultando en la aprobación de cinco leyes de profunda controversia,
+              caracterizadas por su impacto astronómico en la caja fiscal y su abrumador respaldo
+              popular.
+            </p>
+            <p>
+              La reconstrucción exacta del registro de votaciones nominales desglosadas por cada
+              grupo parlamentario, utilizando como fuentes primarias las actas del Pleno, las
+              resoluciones legislativas y el Diario de los Debates, revela una reconfiguración total
+              de las alianzas políticas. El análisis de datos demuestra que la tradicional dicotomía
+              ideológica entre las bancadas de izquierda y derecha se disuelve por completo cuando
+              se someten a votación las denominadas «leyes de gasto». En su lugar, emerge un
+              consenso multipartidario coyuntural, donde agrupaciones conservadoras, liberales y
+              socialistas convergen para aprobar medidas que garantizan réditos electorales
+              inmediatos.
+            </p>
+          </div>
+        </CollapsibleText>
+      </section>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           LEY 1: PENSIONES MAGISTERIALES
+           ════════════════════════════════════════════════════════════════ -->
+      <LawSection
+        id={laws[0].id}
+        shortName={laws[0].shortName}
+        fullName={laws[0].fullName}
+        lawNumber={laws[0].lawNumber}
+        date={laws[0].date}
+        mechanism={laws[0].mechanism}
+        fiscalImpact={laws[0].fiscalImpact}
+        index={1}
+      >
+        <CollapsibleText summaryLabel="Leer contexto histórico">
+          <div class="space-y-4">
+            <p>
+              La lucha por la homologación de las pensiones del sector docente en el Perú constituye
+              uno de los conflictos laborales más longevos y complejos de la administración pública.
+              Históricamente, decenas de miles de maestros cesantes y jubilados adscritos al Sistema
+              Nacional de Pensiones bajo la administración de la ONP, percibían retribuciones
+              paupérrimas que en muchos casos no superaban el rango de los trescientos a ochocientos
+              soles mensuales.
+            </p>
+            <p>
+              En respuesta a esta demanda estructural, el Congreso unificó y debatió los Proyectos
+              de Ley 3864, 4786 y 8911, configurando una normativa que exige la nivelación
+              matemática de las pensiones docentes para que estas no sean inferiores a la
+              Remuneración Íntegra Mensual (RIM) correspondiente a la primera escala de la Carrera
+              Pública Magisterial, cuyo valor vigente asciende a S/ 3,300. El MEF objetó la
+              viabilidad de la propuesta argumentando que la medida destruye los fundamentos
+              actuariales del sistema de reparto de la ONP. A pesar de la observación presidencial,
+              el Pleno decidió someter el dictamen a una votación de aprobación por insistencia.
+            </p>
+          </div>
+        </CollapsibleText>
+
+        <VoteDisplay votes={laws[0].votes} lawId={laws[0].id} />
+
+        <CollapsibleText summaryLabel="Leer análisis del comportamiento de las bancadas">
+          <div class="space-y-4">
+            <p>
+              La configuración de esta votación ilustra el fenómeno del parlamentarismo sindical.
+              Las agrupaciones de izquierda como Perú Libre, Juntos por el Perú - Bloque
+              Magisterial, la Bancada Socialista y el Bloque Democrático Popular actuaron con
+              disciplina marcial, emitiendo la totalidad de sus votos a favor. Esto responde a la
+              naturaleza genética de estas agrupaciones, muchas de las cuales nacieron al amparo de
+              las bases del magisterio rural.
+            </p>
+            <p>
+              El aspecto más revelador es el comportamiento mimético de las bancadas de centro y
+              derecha. Agrupaciones con plataformas teóricamente orientadas hacia el libre mercado y
+              la ortodoxia fiscal, como Fuerza Popular y Renovación Popular, aportaron el volumen
+              crítico de votos para lograr la insistencia. Ante la proximidad de los comicios de
+              abril de 2026, la derecha parlamentaria decidió abandonar la defensa del erario
+              público para evitar ser estigmatizada como un bloque antilaboral.
+            </p>
+            <p>
+              Las únicas tres abstenciones provinieron de miembros de Avanza País, quienes
+              intentaron salvar su responsabilidad frente a los inminentes procesos de
+              inconstitucionalidad, optando por una postura pasiva en lugar de presionar el botón
+              de rechazo.
+            </p>
+          </div>
+        </CollapsibleText>
+      </LawSection>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           LEY 2: BENEFICIOS LABORALES CAS (LEY 32563)
+           ════════════════════════════════════════════════════════════════ -->
+      <LawSection
+        id={laws[1].id}
+        shortName={laws[1].shortName}
+        fullName={laws[1].fullName}
+        lawNumber={laws[1].lawNumber}
+        date={laws[1].date}
+        mechanism={laws[1].mechanism}
+        fiscalImpact={laws[1].fiscalImpact}
+        index={2}
+      >
+        <CollapsibleText summaryLabel="Leer contexto histórico">
+          <div class="space-y-4">
+            <p>
+              El régimen laboral del Contrato Administrativo de Servicios (CAS), instituido
+              originalmente mediante el Decreto Legislativo 1057, fue diseñado como un mecanismo de
+              vinculación transitoria y de excepción. A pesar de su naturaleza temporal, el régimen
+              CAS se metastatizó dentro de la estructura estatal, convirtiéndose en la modalidad de
+              contratación predominante y perpetuando un sistema de discriminación laboral
+              institucionalizada.
+            </p>
+            <p>
+              La Ley 32563 modifica el artículo 6 del Decreto Legislativo 1057, imponiendo a las
+              entidades públicas la obligación de otorgar a los más de 350,000 servidores CAS el
+              derecho irrestricto a la Compensación por Tiempo de Servicios (CTS), calculada sobre
+              el cien por ciento de la remuneración mensual por cada año de servicio.
+              Simultáneamente, erradica el tradicional aguinaldo fijo de S/ 300, sustituyéndolo por
+              gratificaciones completas equivalentes a una remuneración mensual íntegra.
+            </p>
+            <p>
+              A diferencia de otras normas, esta ley fue firmada y oficializada por el propio
+              presidente de la República, José María Balcázar, el 23 de marzo de 2026, bajo el
+              argumento político de que el Estado peruano no podía seguir siendo un mal ejemplo de
+              explotación laboral para la empresa privada.
+            </p>
+          </div>
+        </CollapsibleText>
+
+        <VoteDisplay votes={laws[1].votes} lawId={laws[1].id} />
+
+        <CollapsibleText summaryLabel="Leer análisis del comportamiento de las bancadas">
+          <div class="space-y-4">
+            <p>
+              El escrutinio del tablero de votación exhibe la capitulación absoluta de la ortodoxia
+              económica en el recinto parlamentario. Podemos Perú y Alianza para el Progreso,
+              bancadas con extensas redes clientelares en los gobiernos subnacionales, votaron en
+              bloque inquebrantable a favor. La rentabilidad política de otorgar cientos de miles de
+              gratificaciones completas constituye una herramienta de movilización electoral
+              formidable.
+            </p>
+            <p>
+              Los únicos destellos de resistencia técnica se manifestaron de manera testimonial en
+              Avanza País y Renovación Popular, donde dos solitarios votos en contra intentaron
+              dejar constancia del peligro de obligar a municipalidades pobres a pagar
+              compensaciones millonarias sin fondos de contingencia. Las abstenciones evidencian la
+              disonancia cognitiva de legisladores que comprendían el desastre fiscal, pero carecían
+              del coraje político para enfrentarse a la turba sindical.
+            </p>
+          </div>
+        </CollapsibleText>
+      </LawSection>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           LEY 3: PENSIONES MILITARES Y POLICIALES (LEY 32561)
+           ════════════════════════════════════════════════════════════════ -->
+      <LawSection
+        id={laws[2].id}
+        shortName={laws[2].shortName}
+        fullName={laws[2].fullName}
+        lawNumber={laws[2].lawNumber}
+        date={laws[2].date}
+        mechanism={laws[2].mechanism}
+        fiscalImpact={laws[2].fiscalImpact}
+        index={3}
+      >
+        <CollapsibleText summaryLabel="Leer contexto histórico">
+          <div class="space-y-4">
+            <p>
+              La estructura pensionaria de las fuerzas del orden ha experimentado un desarrollo
+              traumático. Durante gran parte del siglo XX, el personal militar y policial en retiro
+              gozó de los privilegios del Decreto Ley 19846, la «Cédula Viva», que garantizaba que
+              las pensiones se incrementaran automáticamente cada vez que el gobierno decretaba un
+              aumento salarial para el personal en actividad. La insostenibilidad de este sistema
+              llevó a su clausura definitiva mediante el Decreto Legislativo 1133 en 2012.
+            </p>
+            <p>
+              La Ley 32561, promulgada por insistencia en marzo de 2026, busca restituir
+              progresivamente el acceso a una pensión equivalente al cien por ciento de la
+              remuneración en actividad. Se instituye un modelo de contribución mixta: 15% de
+              descuento al personal en actividad y 10% de aporte estatal. El MEF emitió severas
+              advertencias señalando que el descalce actuarial a largo plazo resultará inevitable.
+            </p>
+          </div>
+        </CollapsibleText>
+
+        <VoteDisplay votes={laws[2].votes} lawId={laws[2].id} />
+
+        <CollapsibleText summaryLabel="Leer análisis del comportamiento de las bancadas">
+          <div class="space-y-4">
+            <p>
+              La Ley 32561 actuó como un aglutinador orgánico para las bancadas de derecha y
+              centro-derecha. Fuerza Popular, Renovación Popular, Honor y Democracia y Avanza País
+              funcionaron como una maquinaria perfectamente engrasada. Para estas facciones, el
+              respaldo irrestricto a la familia militar y policial representa un pilar doctrinario
+              fundamental que prioriza el orden y la seguridad por encima de los desequilibrios
+              presupuestarios.
+            </p>
+            <p>
+              En agudo contraste, la izquierda parlamentaria experimentó fragmentación interna. Las
+              cinco abstenciones documentadas no responden a una preocupación por la estabilidad
+              macroeconómica, sino que reflejan las profundas fracturas ideológicas y desconfianzas
+              históricas entre la izquierda radical peruana y las instituciones castrenses.
+            </p>
+          </div>
+        </CollapsibleText>
+      </LawSection>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           LEY 4: BONO VETERANOS DE PACIFICACIÓN (PL 3385)
+           ════════════════════════════════════════════════════════════════ -->
+      <LawSection
+        id={laws[3].id}
+        shortName={laws[3].shortName}
+        fullName={laws[3].fullName}
+        lawNumber={laws[3].lawNumber}
+        date={laws[3].date}
+        mechanism={laws[3].mechanism}
+        fiscalImpact={laws[3].fiscalImpact}
+        index={4}
+      >
+        <CollapsibleText summaryLabel="Leer contexto histórico">
+          <div class="space-y-4">
+            <p>
+              La memoria histórica del conflicto armado interno peruano que ensangrentó las décadas
+              de 1980 y 1990 continúa operando como una fuerza magnética en la producción
+              legislativa contemporánea. El Proyecto de Ley 3385 instituye una pensión mensual
+              vitalicia de S/ 1,130 a favor de los veteranos calificados: personal de tropa,
+              licenciados y comités de autodefensa que arriesgaron su integridad durante las
+              campañas de pacificación nacional.
+            </p>
+            <p>
+              A diferencia de las reformas pensionarias, este bono representa la inyección directa
+              de un pasivo permanente sobre el erario. El MEF objetó advirtiendo que la expansión de
+              los padrones de veteranos podría multiplicar exponencialmente el número de
+              beneficiarios y desestabilizar la partida presupuestal del sector defensa.
+            </p>
+          </div>
+        </CollapsibleText>
+
+        <VoteDisplay votes={laws[3].votes} lawId={laws[3].id} />
+
+        <CollapsibleText summaryLabel="Leer análisis del comportamiento de las bancadas">
+          <div class="space-y-4">
+            <p>
+              La topografía de la votación documenta la profunda fisura tectónica que aún divide al
+              parlamento cuando se debaten temáticas relacionadas con el terrorismo y la intervención
+              militar. El bloque hegemónico de la derecha y el centro político operó con cohesión
+              casi absoluta, consolidando lealtades orgánicas en territorios andinos y amazónicos.
+            </p>
+            <p>
+              Diametralmente opuesto fue el escenario dentro de las bancadas de izquierda, donde el
+              proyecto desencadenó una grave crisis de conciencia. Un sector pragmático apoyó la
+              medida, justificando que la mayoría de las tropas provenían de clases campesinas
+              marginadas. Sin embargo, la facción ideológicamente más radical sumó la totalidad de
+              los 15 votos en contra, objetando que el padrón podría terminar subsidiando a
+              individuos involucrados en violaciones a los derechos humanos durante las operaciones
+              militares de los años ochenta y noventa.
+            </p>
+          </div>
+        </CollapsibleText>
+      </LawSection>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           LEY 5: NOMBRAMIENTO CAS SALUD (LEY 32568)
+           ════════════════════════════════════════════════════════════════ -->
+      <LawSection
+        id={laws[4].id}
+        shortName={laws[4].shortName}
+        fullName={laws[4].fullName}
+        lawNumber={laws[4].lawNumber}
+        date={laws[4].date}
+        mechanism={laws[4].mechanism}
+        fiscalImpact={laws[4].fiscalImpact}
+        index={5}
+      >
+        <CollapsibleText summaryLabel="Leer contexto histórico">
+          <div class="space-y-4">
+            <p>
+              La onda expansiva de la pandemia del COVID-19 dejó una huella indeleble en los
+              recursos humanos del sistema sanitario. Para hacer frente a la crisis, el Estado
+              realizó contrataciones aceleradas bajo la modalidad temporal de CAS-COVID. La presión
+              de las federaciones médicas y los gremios de enfermeras no se detuvo en la conversión
+              a CAS regular; la agenda sindical exigía la erradicación total de la precariedad
+              laboral.
+            </p>
+            <p>
+              La Ley 32568 ordena el nombramiento automático, perentorio y generalizado del cien
+              por ciento del personal profesional, técnico y auxiliar asistencial CAS en el sector
+              salud: 9,361 servidores absortos a los regímenes permanentes del DL 276 y DL 728.
+              Servir y el MEF alertaron que el nombramiento masivo burla los principios de
+              meritocracia y concurso público, y que la rigidización presupuestaria comprometerá la
+              provisión de medicamentos, equipos biomédicos y mantenimiento hospitalario.
+            </p>
+          </div>
+        </CollapsibleText>
+
+        <VoteDisplay votes={laws[4].votes} lawId={laws[4].id} />
+
+        <CollapsibleText summaryLabel="Leer análisis del comportamiento de las bancadas">
+          <div class="space-y-4">
+            <p>
+              La votación ilustra el poder de coerción moral y política del sector salud. El
+              personal sanitario ha capitalizado el sacrificio durante la pandemia, construyendo un
+              escudo retórico de «héroes de bata blanca» impenetrable para cualquier argumentación
+              fiscal. Oponerse al nombramiento de médicos y enfermeras constituye un suicidio
+              político en un país con hondas deficiencias sanitarias.
+            </p>
+            <p>
+              El dato analítico más valioso se oculta en la docena de abstenciones distribuidas
+              entre Fuerza Popular, Alianza para el Progreso, Avanza País y Renovación Popular.
+              Estas son actos deliberados de congresistas vinculados a comisiones económicas que
+              comprenden el daño estructural de destruir la meritocracia, pero carecen de la
+              voluntad para registrar un voto solitario en contra que los expondría al furor de los
+              gremios de salud en sus regiones. La abstención fungió como la única válvula de escape
+              frente a la tiranía de las mayorías.
+            </p>
+          </div>
+        </CollapsibleText>
+      </LawSection>
+
+      <hr class="border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           COMPARACIÓN ENTRE LEYES
+           ════════════════════════════════════════════════════════════════ -->
+      <ComparisonChart />
+
+      <hr class="mt-12 border-slate-200" />
+
+      <!-- ════════════════════════════════════════════════════════════════
+           IMPLICANCIAS ESTRUCTURALES
+           ════════════════════════════════════════════════════════════════ -->
+      <section id="implicancias" class="scroll-mt-20 py-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Implicancias Estructurales y el Colapso del Equilibrio Macroeconómico
+        </h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            La sucesión de aprobaciones de leyes de gasto corriente documentada durante marzo de
+            2026 no puede ser interpretada como una serie de eventos aislados, sino como la
+            consolidación de un paradigma de asedio sistemático contra la arquitectura hacendaria
+            del Estado peruano.
+          </p>
+        </div>
+
+        <CollapsibleText summaryLabel="Leer análisis completo de implicancias">
+          <div class="space-y-6">
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Destrucción del equilibrio presupuestario
+              </h3>
+              <p>
+                Al transferir la carga de la prueba financiera hacia las entidades locales,
+                regionales y ministerios, exigiéndoles que financien miles de millones mediante
+                «modificaciones de su propio presupuesto», el Congreso está induciendo una parálisis
+                silenciosa. El desvío forzoso de capital destinado a inversión pública hacia el pago
+                de nóminas y compensaciones corrientes perpetuará el déficit de infraestructura,
+                desacelerando la creación de empleo privado y contrayendo la expansión del PBI a
+                mediano plazo.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Judicialización masiva
+              </h3>
+              <p>
+                La insistencia parlamentaria en materias de competencia exclusiva del Ejecutivo
+                obligará a la presidencia a inundar el Tribunal Constitucional con demandas de
+                inconstitucionalidad. Este ciclo perverso de promulgación populista y posterior
+                anulación judicial generará falsas expectativas en cientos de miles de trabajadores
+                y militares retirados. La frustración se canalizará en movilizaciones de extrema
+                violencia, desestabilizando la gobernabilidad democrática.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Destrucción de la confianza macroeconómica
+              </h3>
+              <p>
+                La rigidez impuesta a la caja fiscal mediante pasivos contingentes y obligaciones
+                indexadas destruye el principal ancla de confianza de la economía peruana: su
+                prudencia macroeconómica. Las agencias calificadoras tomarán nota de un parlamento
+                bicameral que asume funciones de política fiscal sin base tributaria que lo respalde.
+                El Estado se verá acorralado entre el endeudamiento externo agresivo o la imposición
+                de severas reformas tributarias que asfixiarán al sector privado formal.
+              </p>
+            </div>
+
+            <p class="rounded-lg border-l-4 border-accent bg-accent-light px-5 py-4 text-sm font-medium text-slate-800">
+              El registro exhaustivo y nominal de las votaciones de marzo de 2026 sirve como un acta
+              documental irrefutable del triunfo de las demandas corporativas de corto plazo sobre
+              la supervivencia económica estratégica de la república en los albores de su nueva
+              etapa bicameral.
+            </p>
+          </div>
+        </CollapsibleText>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>

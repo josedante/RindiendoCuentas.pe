@@ -1,0 +1,89 @@
+---
+/**
+ * Layout.astro — Root layout wrapper for all pages.
+ *
+ * Sets the HTML lang to es-PE for Peruvian Spanish audience,
+ * imports global styles (Tailwind + custom tokens), and provides
+ * SEO-ready <head> with Open Graph / Twitter Card meta tags.
+ *
+ * @prop {string} title — Page <title> content.
+ * @prop {string} [description] — Meta description for SEO.
+ */
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = 'Análisis interactivo de las votaciones del Congreso peruano sobre leyes de expansión del gasto público — Marzo 2026.',
+} = Astro.props;
+
+const siteName = 'Rindiendocuentas.pe';
+const siteUrl = 'https://rindiendocuentas.pe';
+---
+
+<!doctype html>
+<html lang="es-PE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- SEO -->
+    <title>{title} | {siteName}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:locale" content="es_PE" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={siteUrl} />
+
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title,
+      description: description,
+      inLanguage: 'es-PE',
+      url: siteUrl,
+      publisher: {
+        '@type': 'Organization',
+        name: siteName,
+        url: siteUrl,
+      },
+      datePublished: '2026-03-26',
+      about: {
+        '@type': 'GovernmentOrganization',
+        name: 'Congreso de la República del Perú',
+      },
+    })} />
+
+    <style>
+      @import '../styles/global.css';
+    </style>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
+    <a
+      href="#introduccion"
+      class="fixed top-0 left-0 z-[100] -translate-y-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-transform focus:translate-y-0"
+    >
+      Saltar al contenido principal
+    </a>
+    <slot />
+  </body>
+</html>

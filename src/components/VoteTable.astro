@@ -1,0 +1,139 @@
+---
+/**
+ * VoteTable.astro — Sortable HTML table for a single law's vote breakdown.
+ *
+ * Renders an accessible <table> with column headers that act as sort controls.
+ * Sorting is handled via vanilla JS (no dependencies) — appropriate for
+ * tables with only 13 rows. Supports ascending/descending toggle per column.
+ *
+ * @prop {PartyVote[]} votes — Array of per-party vote tallies.
+ * @prop {string} lawId — Unique law identifier for scoping.
+ */
+
+import type { PartyVote } from '../data/types';
+
+interface Props {
+  votes: PartyVote[];
+  lawId: string;
+}
+
+const { votes, lawId } = Astro.props;
+
+const sorted = [...votes].sort(
+  (a, b) => (b.aFavor + b.enContra + b.abstencion) - (a.aFavor + a.enContra + a.abstencion),
+);
+---
+
+<div class="vote-table-wrapper overflow-x-auto" data-law-id={lawId}>
+  <table class="w-full text-left text-sm" role="grid" aria-label={`Tabla de votación: ${lawId}`}>
+    <thead>
+      <tr class="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <th class="sortable-header cursor-pointer px-3 py-3 hover:text-slate-900" data-sort="party">
+          Grupo Parlamentario
+          <span class="sort-indicator ml-1 text-slate-300">↕</span>
+        </th>
+        <th class="sortable-header cursor-pointer px-3 py-3 text-right hover:text-slate-900" data-sort="aFavor">
+          A Favor
+          <span class="sort-indicator ml-1 text-slate-300">↕</span>
+        </th>
+        <th class="sortable-header cursor-pointer px-3 py-3 text-right hover:text-slate-900" data-sort="enContra">
+          En Contra
+          <span class="sort-indicator ml-1 text-slate-300">↕</span>
+        </th>
+        <th class="sortable-header cursor-pointer px-3 py-3 text-right hover:text-slate-900" data-sort="abstencion">
+          Abstención
+          <span class="sort-indicator ml-1 text-slate-300">↕</span>
+        </th>
+        <th class="px-3 py-3 text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {sorted.map((v) => {
+        const total = v.aFavor + v.enContra + v.abstencion;
+        return (
+          <tr class="border-b border-slate-100 transition-colors hover:bg-slate-50" data-party={v.party} data-afavor={v.aFavor} data-encontra={v.enContra} data-abstencion={v.abstencion}>
+            <td class="px-3 py-2.5 font-medium text-slate-800">{v.party}</td>
+            <td class="px-3 py-2.5 text-right">
+              {v.aFavor > 0 ? (
+                <span class="inline-block min-w-[2rem] rounded bg-emerald-50 px-2 py-0.5 text-center font-semibold text-emerald-700">
+                  {v.aFavor}
+                </span>
+              ) : (
+                <span class="text-slate-300">—</span>
+              )}
+            </td>
+            <td class="px-3 py-2.5 text-right">
+              {v.enContra > 0 ? (
+                <span class="inline-block min-w-[2rem] rounded bg-rose-50 px-2 py-0.5 text-center font-semibold text-rose-700">
+                  {v.enContra}
+                </span>
+              ) : (
+                <span class="text-slate-300">—</span>
+              )}
+            </td>
+            <td class="px-3 py-2.5 text-right">
+              {v.abstencion > 0 ? (
+                <span class="inline-block min-w-[2rem] rounded bg-amber-50 px-2 py-0.5 text-center font-semibold text-amber-700">
+                  {v.abstencion}
+                </span>
+              ) : (
+                <span class="text-slate-300">—</span>
+              )}
+            </td>
+            <td class="px-3 py-2.5 text-right font-semibold text-slate-700">{total}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  /**
+   * Column sorting for vote tables.
+   * Each click on a column header cycles: ascending → descending → default.
+   */
+  document.querySelectorAll('.vote-table-wrapper').forEach((wrapper) => {
+    const table = wrapper.querySelector('table');
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+    const headers = table.querySelectorAll('.sortable-header');
+
+    headers.forEach((header) => {
+      let direction = 0; // 0 = neutral, 1 = asc, -1 = desc
+
+      header.addEventListener('click', () => {
+        const key = (header as HTMLElement).dataset.sort!;
+        direction = direction === 1 ? -1 : 1;
+
+        // Reset all indicators
+        headers.forEach((h) => {
+          const ind = h.querySelector('.sort-indicator');
+          if (ind) ind.textContent = '↕';
+        });
+        const indicator = header.querySelector('.sort-indicator');
+        if (indicator) indicator.textContent = direction === 1 ? '↑' : '↓';
+
+        if (!tbody) return;
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort((a, b) => {
+          let aVal: string | number;
+          let bVal: string | number;
+
+          if (key === 'party') {
+            aVal = (a as HTMLElement).dataset.party || '';
+            bVal = (b as HTMLElement).dataset.party || '';
+            return direction * (aVal as string).localeCompare(bVal as string, 'es');
+          }
+
+          const dataKey = key === 'aFavor' ? 'afavor' : key === 'enContra' ? 'encontra' : 'abstencion';
+          aVal = parseInt((a as HTMLElement).dataset[dataKey] || '0', 10);
+          bVal = parseInt((b as HTMLElement).dataset[dataKey] || '0', 10);
+          return direction * (aVal - bVal);
+        });
+
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+  });
+</script>
