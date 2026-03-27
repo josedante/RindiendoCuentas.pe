@@ -1,0 +1,447 @@
+---
+/**
+ * leyes-procrimen.astro — Analysis page for the 6 "Leyes Pro-Crimen".
+ *
+ * Covers the six laws identified by Peru's Ministerio Público and
+ * Convoca.pe as weakening the criminal prosecution system. Each law
+ * includes multi-stage vote progression, contextual narrative, and
+ * links to the original scanned vote record PDFs hosted on this site.
+ *
+ * Data sources documented in src/data/pro-crime-laws.ts.
+ */
+
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import LawSection from '../components/LawSection.astro';
+import CollapsibleText from '../components/CollapsibleText.astro';
+import VoteStages from '../components/VoteStages.astro';
+import SourceDocuments from '../components/SourceDocuments.astro';
+import Footer from '../components/Footer.astro';
+
+import {
+  proCrimeLaws,
+  proCrimeLawDescriptions,
+  getTotals,
+  mechanismLabels,
+} from '../data/pro-crime-laws';
+
+const tocItems = [
+  { id: 'introduccion', label: 'Introducción' },
+  ...proCrimeLaws.map((law, i) => ({
+    id: law.id,
+    label: `${i + 1}. ${law.shortName}`,
+  })),
+  { id: 'resumen', label: 'Resumen de Votaciones' },
+  { id: 'implicancias', label: 'Implicancias' },
+];
+
+const totalLaws = proCrimeLaws.length;
+const totalStages = proCrimeLaws.reduce(
+  (sum, law) => sum + (law.voteStages?.length ?? 1),
+  0,
+);
+const byInsistencia = proCrimeLaws.filter(
+  (l) => l.mechanism === 'insistencia',
+).length;
+
+const aggregated = proCrimeLaws.reduce(
+  (acc, law) => {
+    const t = getTotals(law);
+    return {
+      aFavor: acc.aFavor + t.aFavor,
+      enContra: acc.enContra + t.enContra,
+      abstencion: acc.abstencion + t.abstencion,
+    };
+  },
+  { aFavor: 0, enContra: 0, abstencion: 0 },
+);
+
+const summaryData = JSON.stringify(
+  proCrimeLaws.map((law) => ({
+    shortName: law.shortName,
+    lawNumber: law.lawNumber,
+    stages: (law.voteStages ?? []).map((stage) => {
+      const totals = stage.votes.reduce(
+        (acc, v) => ({
+          aFavor: acc.aFavor + v.aFavor,
+          enContra: acc.enContra + v.enContra,
+          abstencion: acc.abstencion + v.abstencion,
+        }),
+        { aFavor: 0, enContra: 0, abstencion: 0 },
+      );
+      return {
+        label: stage.label,
+        date: stage.date,
+        ...totals,
+      };
+    }),
+  })),
+);
+---
+
+<Layout
+  title="Leyes Pro-Crimen — Análisis de Votaciones del Congreso"
+  description="Análisis de las 6 leyes identificadas como debilitantes del sistema de persecución penal del Perú. Votaciones nominales, documentos fuente y contexto."
+>
+  <Header currentPage="procrimen" />
+  <TableOfContents items={tocItems} />
+
+  <div class="pt-16 lg:ml-64">
+    {/* Hero Section */}
+    <section class="relative overflow-hidden bg-slate-900 px-4 py-16 text-white sm:py-24 lg:px-8">
+      <div
+        class="pointer-events-none absolute inset-0 opacity-5"
+        style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+      ></div>
+
+      <div class="relative mx-auto max-w-4xl">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-red-400">
+          Investigación · 2023–2024
+        </p>
+        <h1 class="text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-5xl">
+          Leyes Pro-Crimen: Legislar para la Impunidad
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+          Análisis de las 6 leyes que, según el Ministerio Público y organizaciones como
+          Convoca.pe y Human Rights Watch, debilitan sistemáticamente la capacidad del Estado
+          peruano para perseguir la corrupción y el crimen organizado.
+        </p>
+
+        <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{totalLaws}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Leyes analizadas</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{totalStages}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Sesiones de votación</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{aggregated.aFavor}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Votos «A Favor» (total)</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{byInsistencia}/{totalLaws}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Por insistencia</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="mx-auto max-w-4xl px-4 py-12 lg:px-8">
+
+      {/* ═══ INTRODUCCIÓN ═══ */}
+      <section id="introduccion" class="scroll-mt-20 pb-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">Introducción</h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            Entre abril de 2023 y diciembre de 2024, el Congreso de la República del Perú aprobó
+            seis leyes que, en conjunto, configuran un debilitamiento sistemático del aparato de
+            persecución penal del Estado. Estas normas fueron identificadas por el
+            <strong>Ministerio Público</strong> en su pronunciamiento de enero de 2026 como
+            «leyes pro-crimen» que socavan la capacidad fiscal de investigar y sancionar la
+            corrupción y el crimen organizado.
+          </p>
+
+          <p>
+            La investigación periodística de <strong>Convoca.pe</strong> (2025) identificó que
+            <strong>17 congresistas votaron a favor de las 6 leyes</strong> de manera reiterada,
+            y que muchos de ellos buscan la reelección en las elecciones de abril de 2026.
+            <strong>Human Rights Watch</strong>, en su informe «Legislar para la Impunidad»
+            (julio 2025), documentó cómo estas leyes violan estándares internacionales de
+            derechos humanos y justicia penal.
+          </p>
+
+          <CollapsibleText summaryLabel="Leer contexto completo">
+            <div class="space-y-4">
+              <p>
+                Las seis leyes comparten un patrón común: fueron impulsadas por mayorías
+                parlamentarias transversales — desde Fuerza Popular y Alianza para el Progreso
+                hasta Perú Libre y Podemos Perú — con amplio consenso en primera votación
+                y resistencia mínima. Cuando el Ejecutivo las observó (como en el caso de la
+                Ley 31990 de colaboración eficaz), el Congreso las aprobó por insistencia.
+              </p>
+
+              <p>
+                El contexto es particularmente significativo: múltiples congresistas que votaron
+                a favor de estas leyes enfrentan investigaciones fiscales por delitos de
+                corrupción, organización criminal, o tráfico de influencias. Las leyes aprobadas
+                benefician directamente sus situaciones procesales, ya sea acortando plazos de
+                prescripción, limitando herramientas de investigación, o creando mecanismos de
+                presión sobre los fiscales que los investigan.
+              </p>
+
+              <p>
+                Los documentos fuente (actas oficiales de votación del Pleno) están disponibles
+                como PDF al pie de cada ley para verificación independiente. Los originales son
+                documentos escaneados obtenidos del portal de Asistencias y Votaciones del
+                Congreso de la República.
+              </p>
+            </div>
+          </CollapsibleText>
+        </div>
+      </section>
+
+      {/* ═══ LEY SECTIONS ═══ */}
+      {proCrimeLaws.map((law, i) => (
+        <LawSection
+          id={law.id}
+          shortName={law.shortName}
+          fullName={law.fullName}
+          lawNumber={law.lawNumber}
+          date={law.date}
+          mechanism={law.mechanism}
+          fiscalImpact={law.fiscalImpact}
+          index={i + 1}
+          impactLabel="Impacto"
+        >
+          {/* Contextual narrative */}
+          <CollapsibleText summaryLabel="Leer análisis de impacto">
+            <p set:html={proCrimeLawDescriptions[law.id] ?? ''} />
+          </CollapsibleText>
+
+          {/* Multi-stage vote display */}
+          {law.voteStages && law.voteStages.length > 0 ? (
+            <VoteStages stages={law.voteStages} lawId={law.id} />
+          ) : (
+            <div class="mt-6 rounded-lg border border-slate-200 bg-white p-4">
+              <p class="text-sm text-slate-500">
+                Datos de votación por bancada no disponibles. Consulte el acta oficial.
+              </p>
+            </div>
+          )}
+
+          {/* Source documents */}
+          {law.sourceDocuments && (
+            <SourceDocuments documents={law.sourceDocuments} />
+          )}
+        </LawSection>
+      ))}
+
+      {/* ═══ RESUMEN DE VOTACIONES ═══ */}
+      <section id="resumen" class="scroll-mt-20 py-12">
+        <h2 class="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Resumen de Votaciones
+        </h2>
+        <p class="mb-6 text-sm text-slate-500">
+          Votos totales por etapa para cada una de las 6 leyes pro-crimen.
+        </p>
+
+        <div
+          class="summary-chart-wrapper rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          data-summary={summaryData}
+        >
+          <canvas
+            id="summary-chart"
+            class="w-full"
+            role="img"
+            aria-label="Gráfico resumen de votaciones de las 6 leyes pro-crimen"
+          ></canvas>
+        </div>
+
+        <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <p class="font-semibold">Nota sobre los datos</p>
+          <p class="mt-1">
+            Los totales de votos provienen de fuentes secundarias verificadas (Convoca.pe,
+            La República, Infobae, Wikipedia). Las actas originales del Pleno son documentos
+            escaneados sin texto extraíble. Los PDF fuente están disponibles para descarga
+            al pie de cada ley para verificación independiente.
+          </p>
+        </div>
+      </section>
+
+      {/* ═══ IMPLICANCIAS ═══ */}
+      <section id="implicancias" class="scroll-mt-20 py-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Implicancias Estructurales
+        </h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            Las seis leyes analizadas configuran un patrón de
+            <strong>captura legislativa del sistema de justicia</strong>: el mismo Congreso
+            que debería fiscalizar al poder público ha debilitado sistemáticamente las
+            herramientas que la fiscalía utiliza para investigar y sancionar la corrupción.
+          </p>
+        </div>
+
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-6">
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Erosión del Estado de Derecho
+              </h3>
+              <p>
+                La combinación de prescripciones aceleradas (Ley Soto), limitaciones a la
+                colaboración eficaz, restricciones a la detención preliminar, y un régimen
+                punitivo contra fiscales crea un ecosistema legal donde la persecución de
+                delitos complejos se vuelve prácticamente imposible. Los fiscales enfrentan
+                la paradoja de investigar bajo amenaza de sanción y con herramientas cada
+                vez más limitadas.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Conflicto de interés institucionalizado
+              </h3>
+              <p>
+                De los 130 congresistas, una proporción significativa enfrenta investigaciones
+                fiscales activas. Convoca.pe identificó que 17 de ellos votaron consistentemente
+                a favor de las 6 leyes, y varios buscan la reelección en abril de 2026. Esto
+                configura un conflicto de interés sistémico: legisladores creando las normas
+                que rigen su propia persecución penal.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">
+                Dimensión internacional
+              </h3>
+              <p>
+                La Corte Interamericana de Derechos Humanos expresó preocupación formal por
+                la Ley 32107 (lesa humanidad), señalando que su definición es más restrictiva
+                que el Estatuto de Roma. Human Rights Watch, en su informe de julio 2025,
+                catalogó el paquete legislativo como un programa deliberado de «legislar para
+                la impunidad», violando obligaciones internacionales del Estado peruano.
+              </p>
+            </div>
+
+            <p class="rounded-lg border-l-4 border-red-400 bg-red-50 px-5 py-4 text-sm font-medium text-slate-800">
+              El registro de estas votaciones sirve como documentación histórica del proceso
+              mediante el cual una mayoría parlamentaria transversal utilizó su poder
+              legislativo para debilitar las instituciones encargadas de investigar a sus
+              propios miembros.
+            </p>
+          </div>
+        </CollapsibleText>
+      </section>
+
+      {/* Cross-reference to the spending laws section */}
+      <section class="scroll-mt-20 rounded-xl border border-blue-200 bg-blue-50 p-6 sm:p-8">
+        <h3 class="text-lg font-bold text-slate-900">Ver también: Leyes de Gasto Público</h3>
+        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+          El mismo Congreso que aprobó estas leyes pro-crimen también aprobó en marzo de 2026
+          un paquete de 5 leyes de expansión del gasto público por decenas de miles de millones
+          de soles, en vísperas de las elecciones generales.
+        </p>
+        <a
+          href="/"
+          class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+        >
+          Ver análisis de Leyes de Gasto
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<script>
+  import { Chart, registerables } from 'chart.js';
+  Chart.register(...registerables);
+
+  interface StageSummary {
+    label: string;
+    date: string;
+    aFavor: number;
+    enContra: number;
+    abstencion: number;
+  }
+
+  interface LawSummary {
+    shortName: string;
+    lawNumber: string | null;
+    stages: StageSummary[];
+  }
+
+  const wrapper = document.querySelector('.summary-chart-wrapper') as HTMLElement | null;
+  if (wrapper) {
+    const laws: LawSummary[] = JSON.parse(wrapper.dataset.summary || '[]');
+    const canvas = document.getElementById('summary-chart') as HTMLCanvasElement;
+
+    const labels: string[] = [];
+    const aFavorData: number[] = [];
+    const enContraData: number[] = [];
+    const abstencionData: number[] = [];
+
+    laws.forEach((law) => {
+      law.stages.forEach((stage) => {
+        const lawLabel = law.lawNumber ? `Ley ${law.lawNumber}` : law.shortName;
+        labels.push(`${lawLabel}\n${stage.label}`);
+        aFavorData.push(stage.aFavor);
+        enContraData.push(stage.enContra);
+        abstencionData.push(stage.abstencion);
+      });
+    });
+
+    canvas.style.height = `${labels.length * 36 + 80}px`;
+
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'A Favor',
+            data: aFavorData,
+            backgroundColor: '#059669',
+            borderRadius: 3,
+          },
+          {
+            label: 'En Contra',
+            data: enContraData,
+            backgroundColor: '#e11d48',
+            borderRadius: 3,
+          },
+          {
+            label: 'Abstención',
+            data: abstencionData,
+            backgroundColor: '#f59e0b',
+            borderRadius: 3,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 12 },
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+            },
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              stepSize: 10,
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { color: '#e2e8f0' },
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 10 },
+              autoSkip: false,
+            },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+  }
+</script>

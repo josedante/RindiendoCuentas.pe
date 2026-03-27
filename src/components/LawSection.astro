@@ -28,9 +28,10 @@ interface Props {
   mechanism: ApprovalMechanism;
   fiscalImpact: string;
   index: number;
+  impactLabel?: string;
 }
 
-const { id, shortName, fullName, lawNumber, date, mechanism, fiscalImpact, index } = Astro.props;
+const { id, shortName, fullName, lawNumber, date, mechanism, fiscalImpact, index, impactLabel = 'Impacto fiscal' } = Astro.props;
 
 const formattedDate = new Date(date + 'T12:00:00').toLocaleDateString('es-PE', {
   year: 'numeric',
@@ -75,7 +76,7 @@ const mechanismColor: Record<string, string> = {
       </span>
     </div>
     <p class="mt-4 text-sm leading-relaxed text-slate-600">
-      <span class="font-semibold text-slate-800">Impacto fiscal:</span> {fiscalImpact}
+      <span class="font-semibold text-slate-800">{impactLabel}:</span> {fiscalImpact}
     </p>
   </div>
 

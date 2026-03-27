@@ -2,9 +2,14 @@
  * types.ts — Shared TypeScript interfaces for the voting data model.
  *
  * Data sourced from the official plenary session records of the
- * Congress of Peru (Congreso de la República), March 2026.
- * Primary sources: Actas del Pleno, Diario de los Debates,
- * resoluciones legislativas, and official congressional communications.
+ * Congress of Peru (Congreso de la República).
+ *
+ * Primary sources:
+ * - Actas del Pleno y la Comisión Permanente
+ * - Diario de los Debates
+ * - Resoluciones legislativas
+ * - Official congressional communications
+ * - Convoca.pe investigative analysis (for pro-crime law cross-validation)
  */
 
 /** A single parliamentary group's vote tally for one law. */
@@ -21,6 +26,35 @@ export interface PartyVote {
 
 /** The legislative approval mechanism used. */
 export type ApprovalMechanism = 'insistencia' | 'promulgacion' | 'aprobacion';
+
+/** Thematic category for grouping laws on separate pages. */
+export type LawCategory = 'gasto' | 'procrimen';
+
+/**
+ * A single stage in a multi-vote legislative process.
+ * Laws may pass through primera votación, segunda votación,
+ * exoneración, insistencia, or Comisión Permanente votes.
+ */
+export interface VoteStage {
+  /** Human-readable label (e.g. "Primera Votación", "Insistencia"). */
+  label: string;
+  /** Date of this specific vote (ISO 8601). */
+  date: string;
+  /** Where this vote took place. */
+  venue: 'pleno' | 'comision-permanente';
+  /** Per-group vote breakdown for this stage. */
+  votes: PartyVote[];
+}
+
+/** A reference to a hosted PDF source document. */
+export interface SourceDocument {
+  /** Display label for the link. */
+  label: string;
+  /** Path relative to the site root (e.g. "/documentos/votaciones-procrimen/..."). */
+  path: string;
+  /** Original URL where the document was obtained. */
+  sourceUrl?: string;
+}
 
 /** Metadata and vote breakdown for a single law. */
 export interface Law {
@@ -40,6 +74,12 @@ export interface Law {
   mechanism: ApprovalMechanism;
   /** Brief description of the estimated fiscal impact. */
   fiscalImpact: string;
-  /** Per-group vote breakdown. */
+  /** Per-group vote breakdown (for the primary/final vote). */
   votes: PartyVote[];
+  /** Thematic category. Defaults to 'gasto' if omitted. */
+  category?: LawCategory;
+  /** Multiple vote stages when a law went through several rounds. */
+  voteStages?: VoteStage[];
+  /** Hosted PDF source documents for transparency. */
+  sourceDocuments?: SourceDocument[];
 }

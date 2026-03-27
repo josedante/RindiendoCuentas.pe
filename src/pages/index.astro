@@ -32,7 +32,7 @@ const tocItems = [
 ---
 
 <Layout title="Votaciones del Congreso sobre Leyes de Gasto — Marzo 2026">
-  <Header />
+  <Header currentPage="gasto" />
   <TableOfContents items={tocItems} />
 
   <!-- Main content area — offset for fixed header (pt-16) and sidebar (lg:ml-64) -->
@@ -489,6 +489,26 @@ const tocItems = [
             </p>
           </div>
         </CollapsibleText>
+      </section>
+
+      <!-- Cross-reference to the pro-crime laws section -->
+      <section class="scroll-mt-20 rounded-xl border border-red-200 bg-red-50 p-6 sm:p-8">
+        <h3 class="text-lg font-bold text-slate-900">Ver también: Leyes Pro-Crimen</h3>
+        <p class="mt-2 text-sm leading-relaxed text-slate-600">
+          Además de la expansión del gasto público, el mismo Congreso aprobó 6 leyes que el
+          Ministerio Público identifica como debilitantes del sistema de persecución penal:
+          reducción de plazos de prescripción, limitación de la colaboración eficaz, redefinición
+          del crimen organizado, y restricciones a la detención preliminar.
+        </p>
+        <a
+          href="/leyes-procrimen"
+          class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+        >
+          Ver análisis de Leyes Pro-Crimen
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
       </section>
     </main>
 

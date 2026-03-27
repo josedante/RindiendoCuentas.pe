@@ -2,10 +2,24 @@
 /**
  * Header.astro — Site-wide top navigation bar.
  *
- * Fixed at the top of the viewport. Contains the site brand name
- * and a mobile menu toggle button that dispatches a custom event
- * consumed by TableOfContents to open the mobile drawer.
+ * Fixed at the top of the viewport. Contains the site brand name,
+ * cross-page navigation links, and a mobile menu toggle button that
+ * dispatches a custom event consumed by TableOfContents to open
+ * the mobile drawer.
+ *
+ * @prop {string} [currentPage] — Slug of the active page for nav highlighting.
  */
+
+interface Props {
+  currentPage?: string;
+}
+
+const { currentPage } = Astro.props;
+
+const navLinks = [
+  { href: '/', label: 'Leyes de Gasto', slug: 'gasto' },
+  { href: '/leyes-procrimen', label: 'Leyes Pro-Crimen', slug: 'procrimen' },
+];
 ---
 
 <header
@@ -18,6 +32,23 @@
       </span>
       <span class="hidden text-xs font-medium tracking-wide text-slate-400 sm:inline">.pe</span>
     </a>
+
+    {/* Cross-page navigation */}
+    <nav class="hidden items-center gap-1 sm:flex" aria-label="Secciones del sitio">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            currentPage === link.slug
+              ? 'bg-slate-900 text-white'
+              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+          }`}
+          aria-current={currentPage === link.slug ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
 
     <!-- Mobile TOC toggle — dispatches event for TableOfContents drawer -->
     <button
