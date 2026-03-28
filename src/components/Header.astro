@@ -10,7 +10,7 @@
  * Cross-page links are always visible (including below the sm breakpoint) so informes stay
  * discoverable on phones; report pages still use the hamburger for in-page TOC.
  *
- * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen' | 'universitaria' | 'blindaje-institucional'.
+ * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen' | 'universitaria' | 'blindaje-institucional' | 'alineacion'.
  *        Omit on the hub (/) so no pill appears selected.
  * @prop {boolean} [showMobileToc] — When false, hides the hamburger (hub has no in-page TOC). Default true.
  */
@@ -27,6 +27,7 @@ const navLinks = [
   { href: '/leyes-procrimen', label: 'Leyes Pro-Crimen', slug: 'procrimen' },
   { href: '/contrarreforma-universitaria', label: 'Contrarreforma', slug: 'universitaria' },
   { href: '/blindaje-institucional', label: 'Blindaje', slug: 'blindaje-institucional' },
+  { href: '/alineacion-bancadas', label: 'Alineación', slug: 'alineacion' },
 ];
 ---
 
@@ -43,7 +44,7 @@ const navLinks = [
 
     <div class="flex flex-shrink-0 items-center gap-1 sm:gap-2">
       {/* Cross-page navigation — always visible (including narrow viewports). */}
-      <nav class="flex items-center gap-0.5 sm:gap-1" aria-label="Secciones del sitio">
+      <nav class="flex flex-wrap items-center justify-end gap-0.5 sm:gap-1" aria-label="Secciones del sitio">
         {navLinks.map((link) => (
           <a
             href={link.href}

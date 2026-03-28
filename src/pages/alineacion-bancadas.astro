@@ -1,0 +1,230 @@
+---
+/**
+ * Co-voting alignment between parliamentary groups across all site datasets.
+ */
+
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import BancadaAlignmentMatrix from '../components/BancadaAlignmentMatrix.astro';
+import Footer from '../components/Footer.astro';
+import { buildAlignmentDataset, type AlignmentSourceType } from '../data/bancada-alignment';
+
+const alignment = buildAlignmentDataset();
+
+const tocItems = [
+  { id: 'introduccion', label: 'Introducción' },
+  { id: 'resultados', label: 'Matriz de correlación' },
+  { id: 'votaciones-incluidas', label: 'Votaciones incluidas' },
+  { id: 'metodologia', label: 'Metodología' },
+  { id: 'limites', label: 'Límites y próximos pasos' },
+  { id: 'fuentes', label: 'Documentación y fuentes' },
+];
+
+function sourceLabel(t: AlignmentSourceType): string {
+  switch (t) {
+    case 'procrimen':
+      return 'Leyes Pro-Crimen';
+    case 'blindaje':
+      return 'Blindaje institucional';
+    case 'gasto':
+      return 'Leyes de gasto';
+    case 'universitaria':
+      return 'Contrarreforma universitaria';
+    default:
+      return t;
+  }
+}
+---
+
+<Layout
+  title="Alineación entre bancadas — RindiendoCuentas.pe"
+  description="Co-votación entre bancadas del Congreso a partir de las votaciones publicadas en este sitio: matriz de correlación, metodología y límites del análisis agregado."
+  skipTargetId="introduccion"
+>
+  <Header currentPage="alineacion" />
+  <TableOfContents items={tocItems} />
+
+  <div class="pt-16 lg:ml-64">
+    <section
+      id="introduccion"
+      class="relative scroll-mt-20 overflow-hidden bg-slate-900 px-4 py-16 text-white sm:py-24 lg:px-8"
+    >
+      <div
+        class="pointer-events-none absolute inset-0 opacity-5"
+        style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+      >
+      </div>
+      <div class="relative mx-auto max-w-3xl">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-accent">Síntesis · Datos agregados</p>
+        <h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
+          Alineación entre bancadas
+        </h1>
+        <p class="mt-6 text-lg leading-relaxed text-slate-300">
+          Esta página resume <strong class="font-semibold text-white">quién vota en la misma dirección que quién</strong>
+          en las votaciones que ya reconstruimos en RindiendoCuentas.pe: leyes pro-crimen, blindaje institucional
+          (salvo un caso con otra estructura de datos), leyes de gasto y contrarreforma universitaria. No son
+          «alianzas oficiales» ni posiciones ideológicas únicas: es <strong class="font-semibold text-white"
+            >co-votación estadística</strong> a nivel de bancada.
+        </p>
+        <dl class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <dt class="text-xs font-medium text-slate-400">Votaciones con oposición</dt>
+            <dd class="mt-1 text-2xl font-bold tabular-nums">{alignment.totalRollCallsContested}</dd>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <dt class="text-xs font-medium text-slate-400">Cortes consideradas (bruto)</dt>
+            <dd class="mt-1 text-2xl font-bold tabular-nums">{alignment.totalRollCallsCollected}</dd>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm sm:col-span-1">
+            <dt class="text-xs font-medium text-slate-400">Bancadas en la matriz</dt>
+            <dd class="mt-1 text-2xl font-bold tabular-nums">{alignment.partyIds.length}</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <section id="resultados" class="scroll-mt-20 border-b border-slate-200 px-4 py-14 lg:px-8">
+      <div class="mx-auto max-w-5xl">
+        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Matriz de correlación (Pearson)</h2>
+        <p class="mt-4 max-w-3xl text-slate-600 leading-relaxed">
+          Cada celda es la correlación de Pearson entre los vectores de puntuación de dos bancadas en las votaciones
+          donde <em>ambas</em> tienen dato. La puntuación por bancada y por votación es el saldo neto normalizado:
+          <code class="rounded bg-slate-100 px-1 text-sm">(a favor − en contra) / (total de votos de la bancada)</code>,
+          incluyendo abstenciones en el denominador. Valores cercanos a <strong>1</strong> indican que las dos bancadas
+          suelen moverse en el mismo sentido en estas cortes; valores cercanos a <strong>−1</strong>, en sentidos
+          opuestos.
+        </p>
+        <div class="mt-8">
+          <BancadaAlignmentMatrix
+            partyIds={alignment.partyIds}
+            idToDisplay={alignment.idToDisplay}
+            correlationMatrix={alignment.correlationMatrix}
+            minSharedVotes={alignment.minSharedVotes}
+          />
+        </div>
+        <p class="mt-6 text-sm text-slate-500">
+          Leyenda aproximada: tonos verdes = correlación positiva; rojos = negativa; gris = sin estimación por pocos
+          datos compartidos. Compare con la sección de metodología antes de interpretar resultados puntuales.
+        </p>
+      </div>
+    </section>
+
+    <section id="votaciones-incluidas" class="scroll-mt-20 border-b border-slate-200 px-4 py-14 lg:px-8">
+      <div class="mx-auto max-w-5xl">
+        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Votaciones incluidas</h2>
+        <p class="mt-4 text-slate-600 leading-relaxed">
+          Solo entran votaciones donde hubo al menos un voto <strong>en contra</strong> a nivel global en la corte
+          (después de fusionar alias de bancada). Quedan excluidas las etapas que solo publican un total agregado sin
+          desglose por bancada y el caso «Los Niños» del informe de blindaje (filas por imputado, no por bancada).
+        </p>
+        <div class="mt-8 overflow-x-auto rounded-lg border border-slate-200">
+          <table class="min-w-full text-left text-sm">
+            <thead class="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-600">
+              <tr>
+                <th scope="col" class="px-4 py-3">Fecha</th>
+                <th scope="col" class="px-4 py-3">Informe</th>
+                <th scope="col" class="px-4 py-3">Votación</th>
+                <th scope="col" class="px-4 py-3">Enlace</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              {alignment.rollCalls.map((rc) => (
+                <tr class="hover:bg-slate-50/80">
+                  <td class="whitespace-nowrap px-4 py-3 text-slate-700 tabular-nums">{rc.date}</td>
+                  <td class="px-4 py-3 text-slate-600">{sourceLabel(rc.sourceType)}</td>
+                  <td class="px-4 py-3 text-slate-900">{rc.label}</td>
+                  <td class="px-4 py-3">
+                    <a
+                      href={rc.reportHref}
+                      class="font-medium text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
+                    >
+                      Ver informe
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="metodologia" class="scroll-mt-20 border-b border-slate-200 px-4 py-14 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Metodología</h2>
+        <ul class="mt-6 list-disc space-y-3 pl-5 text-slate-700">
+          <li>
+            <strong>Fuentes:</strong> mismos archivos TypeScript que alimentan los informes (<code
+              class="rounded bg-slate-100 px-1 font-mono text-xs">pro-crime-laws.ts</code>, etapas en <code
+              class="rounded bg-slate-100 px-1 font-mono text-xs">voteStages</code>;
+            <code class="rounded bg-slate-100 px-1 font-mono text-xs">blindaje-cases.ts</code>;
+            <code class="rounded bg-slate-100 px-1 font-mono text-xs">laws.ts</code>;
+            <code class="rounded bg-slate-100 px-1 font-mono text-xs">contrarreforma-laws.ts</code>).
+          </li>
+          <li>
+            <strong>Homogeneización de nombres:</strong> variantes de etiqueta («APP», «Bloque Magisterial», etc.) se
+            mapean a un id canónico para no contar la misma bancada como dos columnas distintas. Las filas
+            deliberadamente agrupadas en una sola categoría (p. ej. en la Denuncia Constitucional 509) permanecen como
+            un solo nodo con su etiqueta literal.
+          </li>
+          <li>
+            <strong>Filtro de oposición:</strong> se descartan votaciones con cero votos en contra en el total de la corte,
+            para reducir el peso de plenos unánimes que no discriminan entre bancadas.
+          </li>
+          <li>
+            <strong>Correlación:</strong> Pearson entre pares de bancadas; solo se usa un par de puntos en las votaciones
+            donde ambas bancadas tienen al menos un voto registrado. Si hay menos de{' '}
+            {alignment.minSharedVotes} votaciones compartidas, la celda se deja sin estimación («—»).
+          </li>
+          <li>
+            <strong>Mezcla de temas:</strong> una votación sobre archivo en la SAC y otra sobre una ley penal no miden la
+            misma pregunta política; juntas describen <em>patrones de co-votación</em> en el conjunto de cortes que
+            publicamos, no una única dimensión ideológica.
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="limites" class="scroll-mt-20 border-b border-slate-200 px-4 py-14 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Límites y próximos pasos</h2>
+        <div class="mt-6 space-y-4 text-slate-700 leading-relaxed">
+          <p>
+            Los datos son <strong>agregados por bancada</strong>, no nominales por congresista. No es posible inferir
+            facciones dentro de una misma bancada ni posiciones individuales con este modelo.
+          </p>
+          <p>
+            <strong>Próximo paso natural:</strong> incorporar registros nominales de Asistencias y Votaciones del
+            Congreso (u otras fuentes verificadas) para calcular escalas tipo NOMINATE, clusters de legisladores y redes
+            más finas, siempre con el mismo estándar de trazabilidad a las actas.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fuentes" class="scroll-mt-20 px-4 py-14 lg:px-8">
+      <div class="mx-auto max-w-3xl">
+        <h2 class="text-2xl font-bold text-slate-900 sm:text-3xl">Documentación y fuentes</h2>
+        <p class="mt-4 text-slate-600 leading-relaxed">
+          La descripción técnica detallada (exclusiones, alias de bancadas, criterios de inclusión y roadmap) está en el
+          repositorio del sitio:
+        </p>
+        <p class="mt-4">
+          <a
+            href="/documentos/alineacion-bancadas/README.md"
+            class="inline-flex items-center gap-2 font-semibold text-accent underline decoration-accent/30 underline-offset-2 hover:decoration-accent"
+          >
+            public/documentos/alineacion-bancadas/README.md
+          </a>
+        </p>
+        <p class="mt-4 text-sm text-slate-500">
+          Los datos primarios de cada votación siguen enlazados desde los informes correspondientes (PDFs del Congreso,
+          comunicaciones y notas metodológicas por ley o caso).
+        </p>
+      </div>
+    </section>
+
+    <Footer variant="site" />
+  </div>
+</Layout>
