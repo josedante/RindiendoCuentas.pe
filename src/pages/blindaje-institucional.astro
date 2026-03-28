@@ -1,0 +1,630 @@
+---
+/**
+ * blindaje-institucional.astro — Casos emblemáticos (estándar interactivo: CaseSection, VoteDisplay).
+ */
+
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import CaseSection from '../components/CaseSection.astro';
+import CollapsibleText from '../components/CollapsibleText.astro';
+import VoteDisplay from '../components/VoteDisplay.astro';
+import SourceDocuments from '../components/SourceDocuments.astro';
+import Footer from '../components/Footer.astro';
+import { blindajeCases, getBlindajeVoteTotals } from '../data/blindaje-cases';
+
+const tocItems = [
+  { id: 'introduccion', label: 'Introducción' },
+  ...blindajeCases.map((c, i) => ({
+    id: c.id,
+    label: `${i + 1}. ${c.shortName.split(' — ')[0]}`,
+  })),
+  { id: 'resumen', label: 'Resumen de votaciones' },
+  { id: 'conclusion', label: 'Conclusión' },
+  { id: 'obras-citadas', label: 'Obras citadas' },
+];
+
+const summaryData = JSON.stringify(
+  blindajeCases.map((c) => {
+    const t = getBlindajeVoteTotals(c.votes);
+    return {
+      shortName: c.shortName,
+      lawNumber: null as string | null,
+      stages: [
+        {
+          label: 'Votación reconstruida',
+          date: c.date,
+          aFavor: t.aFavor,
+          enContra: t.enContra,
+          abstencion: t.abstencion,
+        },
+      ],
+    };
+  }),
+);
+
+const nCases = blindajeCases.length;
+---
+
+<Layout
+  title="Blindaje institucional — Votaciones del Congreso (2023–2026)"
+  description="Cuatro casos emblemáticos: Caso Rolex, Denuncia Constitucional 509, Patricia Benavides y Los Niños. Gráficos, tablas y fuentes."
+  skipTargetId="introduccion"
+>
+  <Header currentPage="blindaje-institucional" />
+  <TableOfContents items={tocItems} />
+
+  <div class="pt-16 lg:ml-64">
+    <section class="relative overflow-hidden bg-slate-900 px-4 py-16 text-white sm:py-24 lg:px-8">
+      <div
+        class="pointer-events-none absolute inset-0 opacity-5"
+        style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+      >
+      </div>
+
+      <div class="relative mx-auto max-w-4xl">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-amber-300">
+          Investigación · 2023–2026
+        </p>
+        <h1 class="text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-5xl">
+          Blindaje institucional en el Congreso
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+          Archivo de denuncias constitucionales y antejuicios en la SAC, la Comisión Permanente y el
+          Pleno: Rolex, muertes en protestas, Patricia Benavides y el caso Los Niños.
+        </p>
+
+        <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{nCases}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Casos analizados</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{nCases}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Votaciones clave</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">3</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Instancias</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">21</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Referencias</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="mx-auto max-w-4xl px-4 py-12 lg:px-8">
+      <section id="introduccion" class="scroll-mt-20 pb-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Introducción
+        </h2>
+        <div class="space-y-4 text-base leading-relaxed text-slate-700">
+          <p>
+            El Congreso de la República del Perú ha atravesado, durante el periodo legislativo
+            2021-2026, un proceso de profunda reconfiguración en sus dinámicas de poder interno,
+            caracterizado por la conformación de coaliciones pragmáticas que trascienden de manera
+            sistemática las fronteras ideológicas tradicionales. Este fenómeno, a menudo
+            conceptualizado en la ciencia política contemporánea como una «coalición de
+            supervivencia», ha encontrado en los mecanismos constitucionales de control político y
+            antejuicio herramientas formidables no solo para la fiscalización del aparato estatal,
+            sino, de manera cada vez más evidente, para el blindaje corporativo de altos
+            funcionarios del Estado y de los propios representantes parlamentarios.
+          </p>
+          <p>
+            La Subcomisión de Acusaciones Constitucionales (SAC), la Comisión Permanente y el Pleno
+            del Congreso constituyen, en conjunto, el filtro definitivo y supremo de la
+            responsabilidad política y penal de los aforados en el ordenamiento jurídico peruano.
+          </p>
+          <CollapsibleText summaryLabel="Leer introducción completa">
+            <div class="space-y-4">
+              <p>
+                La potestad exclusiva de admitir a trámite, investigar, calificar y, finalmente,
+                acusar constitucionalmente otorga al Parlamento un poder casi absoluto sobre el futuro
+                judicial del Presidente de la República, los Fiscales de la Nación, los Ministros
+                de Estado, los magistrados de las altas cortes y los propios congresistas de la
+                República. La presente investigación reconstruye con precisión documental el
+                comportamiento de las bancadas en cuatro casos emblemáticos que definen la actual
+                legislatura.
+              </p>
+              <p>
+                Estos cuatro expedientes críticos comprenden: el archivo del denominado «Caso
+                Rolex» contra la presidenta Dina Boluarte en la SAC; el archivo de la Denuncia
+                Constitucional 509 por las muertes en las protestas en la Comisión Permanente; el
+                archivo exprés contra la ex fiscal Patricia Benavides en la SAC; y el blindaje en el
+                Pleno al bloque «Los Niños» de Acción Popular.
+              </p>
+              <p>
+                A través del escrutinio de archivos oficiales, actas, Diario de los Debates y
+                registros de votaciones, este informe expone el desglose aritmético que permitió
+                desestimar investigaciones fiscales promovidas por el Ministerio Público,
+                consolidando un patrón de protección mutua entre los poderes del Estado.
+              </p>
+            </div>
+          </CollapsibleText>
+        </div>
+      </section>
+
+      <!-- 1 Caso Rolex -->
+      <CaseSection
+        id="caso-rolex"
+        index={1}
+        shortName="Caso Rolex — archivo en la SAC"
+        fullName={blindajeCases[0].fullName}
+        date={blindajeCases[0].date}
+        venue={blindajeCases[0].venue}
+        resultLine={blindajeCases[0].resultLine}
+      >
+        <p class="text-base leading-relaxed text-slate-700">
+          La investigación fiscal conocida como el «Caso Rolex» representó uno de los desafíos
+          políticos y éticos más severos para la administración de Dina Boluarte: presunto
+          enriquecimiento ilícito, omisión de declaraciones y cohecho pasivo impropio, con indicios
+          sobre bienes de lujo y movimientos patrimoniales cuestionados.
+        </p>
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-4 text-sm leading-relaxed text-slate-700">
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Contexto fáctico y jurídico</h3>
+              <p>
+                El Ministerio Público, mediante el fiscal de la Nación interino Juan Carlos Villena,
+                amplió las investigaciones preliminares contra la mandataria. La tesis fiscal
+                vinculaba bienes de alto valor con posibles transferencias y el gobernador regional
+                de Ayacucho; la viabilidad penal dependía del antejuicio en el Congreso.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Artículo 117</h3>
+              <p>
+                El archivo en la SAC no se fundó en el fondo probatorio sino en una lectura
+                restrictiva del artículo 117 de la Constitución: los delitos imputados no figurarían
+                entre las cuatro causales taxativas de acusación al presidente en ejercicio. La
+                oposición y parte de la doctrina señalaron distorsión y contradicción con informes
+                técnicos previos más favorables a admitir la denuncia.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Interpretación del resultado</h3>
+              <p>
+                El bloque de centro-derecha (Fuerza Popular, Acción Popular, APP) actuó con parte
+                del Bloque Magisterial para priorizar la continuidad del mandato. Renovación Popular
+                votó unánimemente contra el archivo. Días después del blindaje se autorizaron
+                transferencias presupuestarias al Gobierno Regional de Ayacucho, en correlación
+                mediática con el caso.
+              </p>
+            </div>
+          </div>
+        </CollapsibleText>
+        <VoteDisplay votes={blindajeCases[0].votes} lawId={blindajeCases[0].id} />
+        {blindajeCases[0].voteSourceNote && (
+          <p class="mt-3 text-sm text-slate-600">{blindajeCases[0].voteSourceNote}</p>
+        )}
+        {blindajeCases[0].sourceDocuments && (
+          <SourceDocuments documents={blindajeCases[0].sourceDocuments} />
+        )}
+      </CaseSection>
+
+      <!-- 2 DC 509 -->
+      <CaseSection
+        id="denuncia-509"
+        index={2}
+        shortName="Denuncia Constitucional 509 — muertes en protestas"
+        fullName={blindajeCases[1].fullName}
+        date={blindajeCases[1].date}
+        venue={blindajeCases[1].venue}
+        resultLine={blindajeCases[1].resultLine}
+      >
+        <p class="text-base leading-relaxed text-slate-700">
+          El archivo de la DC 509 definió la postura del Parlamento frente a las responsabilidades
+          por la represión en las protestas de 2022-2023. La Fiscalía imputó homicidio calificado y
+          lesiones bajo la lógica de omisión impropia y dolo eventual a más alto nivel.
+        </p>
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-4 text-sm leading-relaxed text-slate-700">
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Imputaciones y contexto</h3>
+              <p>
+                La denuncia alcanzó a la presidenta como jefa suprema de las Fuerzas Armadas y la
+                Policía, al premier Alberto Otárola y a exministros de Defensa e Interior. Se
+                documentaron decenas de muertos y heridos en el marco de las protestas.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Comisión Permanente</h3>
+              <p>
+                El 11 de setiembre de 2025 la CP debatió el informe de archivo. Ruth Luque planteó
+                cuestión previa para devolver el expediente a la SAC; el empate 10-10 se resolvió
+                con el voto dirimente de Ilich López Ureña (Acción Popular) en contra de la
+                devolución, abriendo paso al archivo.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Consecuencias</h3>
+              <p>
+                Organizaciones de familias de víctimas condenaron la decisión. El cierre de la vía
+                parlamentaria empuja la discusión hacia instancias internacionales de derechos
+                humanos.
+              </p>
+            </div>
+          </div>
+        </CollapsibleText>
+        <VoteDisplay votes={blindajeCases[1].votes} lawId={blindajeCases[1].id} />
+        {blindajeCases[1].voteSourceNote && (
+          <p class="mt-3 text-sm text-slate-600">{blindajeCases[1].voteSourceNote}</p>
+        )}
+        {blindajeCases[1].sourceDocuments && (
+          <SourceDocuments documents={blindajeCases[1].sourceDocuments} />
+        )}
+      </CaseSection>
+
+      <!-- 3 Benavides -->
+      <CaseSection
+        id="patricia-benavides"
+        index={3}
+        shortName="Patricia Benavides — rechazo del informe en la SAC"
+        fullName={blindajeCases[2].fullName}
+        date={blindajeCases[2].date}
+        venue={blindajeCases[2].venue}
+        resultLine={blindajeCases[2].resultLine}
+      >
+        <p class="text-base leading-relaxed text-slate-700">
+          La DC 602, impulsada por la fiscal suprema Delia Espinoza, acusaba a Patricia Benavides de
+          cohecho, abuso de autoridad y encubrimiento en el manejo de fiscales provisionales, con
+          vínculos al caso Cuellos Blancos del Puerto.
+        </p>
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-4 text-sm leading-relaxed text-slate-700">
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Conflicto en el Ministerio Público</h3>
+              <p>
+                La JNJ suspendió a Benavides; el Congreso se convirtió en campo de batalla por su
+                eventual restitución y por el control político sobre la fiscalía.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Blindaje «súper express»</h3>
+              <p>
+                El 25 de julio de 2025 la SAC votó sin debate profundo un informe técnico que
+                recomendaba admitir la denuncia. La mayoría rechazó ese informe —archivo—. La prensa
+                especializada documentó maniobras dilatorias y el retorno de Héctor Ventura para
+                emitir el voto decisivo.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Fujicerronismo</h3>
+              <p>
+                Las abstenciones de Perú Libre, sumadas al voto fujimorista, permitieron la mayoría
+                de siete votos a favor del archivo; se interpreta como convergencia táctica entre
+                extremos del arco parlamentario.
+              </p>
+            </div>
+          </div>
+        </CollapsibleText>
+        <VoteDisplay votes={blindajeCases[2].votes} lawId={blindajeCases[2].id} />
+        {blindajeCases[2].voteSourceNote && (
+          <p class="mt-3 text-sm text-slate-600">{blindajeCases[2].voteSourceNote}</p>
+        )}
+        {blindajeCases[2].sourceDocuments && (
+          <SourceDocuments documents={blindajeCases[2].sourceDocuments} />
+        )}
+      </CaseSection>
+
+      <!-- 4 Los Niños -->
+      <CaseSection
+        id="los-ninos"
+        index={4}
+        shortName="Caso «Los Niños» — Pleno"
+        fullName={blindajeCases[3].fullName}
+        date={blindajeCases[3].date}
+        venue={blindajeCases[3].venue}
+        resultLine={blindajeCases[3].resultLine}
+        resultLabel="Situación"
+      >
+        <p class="text-base leading-relaxed text-slate-700">
+          Cuatro congresistas de Acción Popular quedaron bajo denuncia constitucional por tráfico
+          de influencias y organización criminal en el marco del gobierno de Pedro Castillo. El
+          Pleno no alcanzó los 52 votos para acusar y suspender.
+        </p>
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-4 text-sm leading-relaxed text-slate-700">
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">MTC y pacto de gobierno</h3>
+              <p>
+                La acusación vinculaba votos contra vacancias y censuras con cargos y obras en el
+                MTC y otros ministerios, con respaldo en colaboradores eficaces e interceptaciones.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Gimnasia reglamentaria</h3>
+              <p>
+                Sesión del 18 de mayo de 2023: cuestión de orden, umbral de mitad más uno sobre
+                cuerpo habilitado (52 votos), fase reservada con carpeta fiscal. La Mesa ordenó
+                archivar tras no superar el quórum en cada votación nominal.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-base font-bold text-slate-900">Inmunidad corporativa</h3>
+              <p>
+                El patrón de 40 y tantos votos «a favor del blindaje» se explica por apoyo
+                transversal, incluidos bloques que habían sostenido a Castillo, y por el cálculo de
+                no alterar el mapa de poder interno del Congreso.
+              </p>
+            </div>
+          </div>
+        </CollapsibleText>
+        <p class="mt-2 text-xs text-slate-500">
+          En la tabla y el gráfico, «Grupo parlamentario» corresponde a cada imputado; «A favor» =
+          votos que rechazaron la acusación (blindaje).
+        </p>
+        <VoteDisplay votes={blindajeCases[3].votes} lawId={blindajeCases[3].id} />
+        {blindajeCases[3].voteSourceNote && (
+          <p class="mt-3 text-sm text-slate-600">{blindajeCases[3].voteSourceNote}</p>
+        )}
+        {blindajeCases[3].sourceDocuments && (
+          <SourceDocuments documents={blindajeCases[3].sourceDocuments} />
+        )}
+      </CaseSection>
+
+      <section id="resumen" class="scroll-mt-20 py-12">
+        <h2 class="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">Resumen de votaciones</h2>
+        <p class="mb-6 text-sm text-slate-500">
+          Totales agregados por caso (suma de filas en cada tabla de bancadas o imputados).
+        </p>
+        <div
+          class="summary-chart-wrapper rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          data-summary={summaryData}
+          data-blindaje-summary
+        >
+          <canvas
+            id="summary-chart-blindaje"
+            class="w-full"
+            role="img"
+            aria-label="Resumen de votaciones del informe blindaje institucional"
+          ></canvas>
+        </div>
+        <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <p class="font-semibold">Nota sobre los datos</p>
+          <p class="mt-1">
+            Cada caso incluye desglose en gráfico y tabla ordenable. La Denuncia Constitucional 509
+            usa filas agregadas por eje político cuando la prensa no publica la nómina íntegra de
+            sufragantes. Metodología y enlaces en
+            <code class="rounded bg-amber-100 px-1">public/documentos/blindaje-institucional/README.md</code>.
+          </p>
+        </div>
+      </section>
+
+      <section id="conclusion" class="scroll-mt-20 py-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Conclusión sistémica
+        </h2>
+        <div class="space-y-4 text-base leading-relaxed text-slate-700">
+          <p>
+            La reconstrucción de estas cuatro votaciones arroja conclusiones preocupantes sobre la
+            institucionalidad democrática. La SAC y la Comisión Permanente han tendido a operar
+            como instancias de administración de impunidad más que de jurisdicción política
+            objetiva.
+          </p>
+          <p>
+            En los casos Boluarte (Rolex y DC 509), el archivo no respondió a la desvirtuación
+            material de los hechos sino a interpretaciones constitucionales restrictivas (art. 117)
+            y a estándares probatorios extremos frente a violaciones de derechos humanos.
+          </p>
+          <p>
+            El fujimorismo y convergencias tácticas con sectores de la izquierda parlamentaria
+            aparecen como motor aritmético de varios archivos; el caso Benavides muestra manipulación
+            de tiempos y abstenciones clave.
+          </p>
+          <p>
+            El caso «Los Niños» ilustra la degradación del antejuicio cuando el Pleno protege a pares
+            bajo acusaciones gravísimas, consolidando un déficit de rendición de cuentas horizontal.
+          </p>
+        </div>
+      </section>
+
+      <section id="obras-citadas" class="scroll-mt-20 py-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">Obras citadas</h2>
+        <ol class="list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-700">
+          <li>
+            <a
+              class="text-blue-700 underline hover:text-blue-900"
+              href="https://www.congreso.gob.pe/Docs/biblioteca/files/alerta-bibliografica-2025/g2024abr3.pdf"
+              target="_blank"
+              rel="noopener noreferrer">Congreso — Alerta bibliográfica (PDF)</a>
+          </li>
+          <li>
+            <a
+              class="text-blue-700 underline hover:text-blue-900"
+              href="https://www.infobae.com/peru/2025/04/11/los-rolex-de-dina-boluarte-quienes-son-los-congresistas-que-votaron-a-favor-de-archivar-la-denuncia-contra-la-presidenta/"
+              target="_blank"
+              rel="noopener noreferrer">Infobae — Votos Caso Rolex</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=PrKDS-LZDfQ" target="_blank" rel="noopener noreferrer">YouTube — LR, vacancias Caso Rolex</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=RjxeLCp9WzY" target="_blank" rel="noopener noreferrer">YouTube — RPP, archivo Caso Rólex</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=s3R3RTltfus" target="_blank" rel="noopener noreferrer">YouTube — Caso Rolex archivado</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://comunicaciones.congreso.gob.pe/wpuploads/2025/09/AGENDA-CP-11-09-2025.pdf" target="_blank" rel="noopener noreferrer">Agenda CP 11-09-2025 (PDF)</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://comunicaciones.congreso.gob.pe/noticias/comision-permanente-archiva-denuncia-constitucional-contra-presidenta-dina-boluarte-por-muertes-durante-protestas-sociales/" target="_blank" rel="noopener noreferrer">Comunicaciones Congreso — Archivo DC 509</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.swissinfo.ch/spa/el-congreso-de-per%C3%BA-archiva-una-denuncia-contra-boluarte-por-muertes-durante-protestas/89991587" target="_blank" rel="noopener noreferrer">Swissinfo — Archivo por muertes en protestas</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=KFq4bmfE_hE" target="_blank" rel="noopener noreferrer">YouTube — Archivo DC 509</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://comunicaciones.congreso.gob.pe/noticias/subcomision-de-acusaciones-constitucionales-no-aprueba-informe-de-calificacion-de-denuncia-contra-patricia-benavides/" target="_blank" rel="noopener noreferrer">Comunicaciones Congreso — Benavides</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://elbuho.pe/2025/07/de-manera-super-express-y-en-contra-del-informe-legal-que-admitia-la-denuncia-sac-blinda-a-patricia-benavides/" target="_blank" rel="noopener noreferrer">El Búho — SAC blinda a Benavides</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=H3xn1M78rI8" target="_blank" rel="noopener noreferrer">YouTube — Junta de Fiscales Supremos / Benavides</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://elbuho.pe/page/248/?attachment_id&query-31-page=76&noamp=mobile&=1" target="_blank" rel="noopener noreferrer">El Búho — material complementario</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www3.congreso.gob.pe/Docs/DGP/diariodebates/files/diario-debates/per-2022-18(t).pdf" target="_blank" rel="noopener noreferrer">Diario de Debates — CP 2022-2023 (PDF)</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://fpp.org.pe/patricia-benavides-presento-denuncia-constitucional-contra-4-congresistas-por-caso-los-ninos/" target="_blank" rel="noopener noreferrer">FPP — Denuncia Los Niños</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://lalupa.pe/politica/fiscal-de-la-nacion-presento-denuncia-constitucional-contra-congresista-raul-doroteo-involucrado-en-el-caso-los-ninos-73639" target="_blank" rel="noopener noreferrer">La Lupa — Doroteo</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=epDr4PQr56A" target="_blank" rel="noopener noreferrer">YouTube — Caso Los Niños</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=S1rMHKRRH6Y" target="_blank" rel="noopener noreferrer">YouTube — Blindaje Los Niños</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://www.youtube.com/watch?v=83Q4zK2kBH4" target="_blank" rel="noopener noreferrer">YouTube — Debate informe Los Niños</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://rpp.pe/politica/congreso/congreso-blinda-a-los-ninos-y-manda-al-archivo-acusaciones-constitucionales-contra-legisladores-noticia-1485294" target="_blank" rel="noopener noreferrer">RPP — Archivo acusaciones Los Niños</a>
+          </li>
+          <li>
+            <a class="text-blue-700 underline hover:text-blue-900" href="https://elperuano.pe/noticia/213089-pleno-del-congreso-desestimo-acusar-a-congresistas-del-caso-los-ninos" target="_blank" rel="noopener noreferrer">El Peruano — Pleno Los Niños</a>
+          </li>
+        </ol>
+      </section>
+
+      <div class="scroll-mt-20 grid gap-6 pb-12 sm:grid-cols-2">
+        <section class="rounded-xl border border-slate-200 bg-slate-50 p-6">
+          <h3 class="text-lg font-bold text-slate-900">Leyes Pro-Crimen</h3>
+          <p class="mt-2 text-sm text-slate-600">Votaciones por etapa y actas del Pleno.</p>
+          <a
+            href="/leyes-procrimen"
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+          >
+            Abrir informe
+          </a>
+        </section>
+        <section class="rounded-xl border border-slate-200 bg-slate-50 p-6">
+          <h3 class="text-lg font-bold text-slate-900">Contrarreforma universitaria</h3>
+          <p class="mt-2 text-sm text-slate-600">SUNEDU, licenciamiento y votaciones comparadas.</p>
+          <a
+            href="/contrarreforma-universitaria"
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+          >
+            Abrir informe
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <Footer reportContext="blindaje" />
+  </div>
+</Layout>
+
+<script>
+  import { Chart, registerables } from 'chart.js';
+  Chart.register(...registerables);
+
+  interface StageSummary {
+    label: string;
+    date: string;
+    aFavor: number;
+    enContra: number;
+    abstencion: number;
+  }
+
+  interface LawSummary {
+    shortName: string;
+    lawNumber: string | null;
+    stages: StageSummary[];
+  }
+
+  const wrapper = document.querySelector('[data-blindaje-summary]') as HTMLElement | null;
+  const canvas = document.getElementById('summary-chart-blindaje') as HTMLCanvasElement | null;
+  if (wrapper && canvas) {
+    const laws: LawSummary[] = JSON.parse(wrapper.dataset.summary || '[]');
+
+    const labels: string[] = [];
+    const aFavorData: number[] = [];
+    const enContraData: number[] = [];
+    const abstencionData: number[] = [];
+
+    laws.forEach((law) => {
+      law.stages.forEach((stage) => {
+        const lawLabel = law.lawNumber ? `Ley ${law.lawNumber}` : law.shortName;
+        labels.push(`${lawLabel}\n${stage.label}`);
+        aFavorData.push(stage.aFavor);
+        enContraData.push(stage.enContra);
+        abstencionData.push(stage.abstencion);
+      });
+    });
+
+    canvas.style.height = `${labels.length * 36 + 80}px`;
+
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'A Favor',
+            data: aFavorData,
+            backgroundColor: '#059669',
+            borderRadius: 3,
+          },
+          {
+            label: 'En Contra',
+            data: enContraData,
+            backgroundColor: '#e11d48',
+            borderRadius: 3,
+          },
+          {
+            label: 'Abstención',
+            data: abstencionData,
+            backgroundColor: '#f59e0b',
+            borderRadius: 3,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 12 },
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+            },
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              stepSize: 10,
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { color: '#e2e8f0' },
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 10 },
+              autoSkip: false,
+            },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+  }
+</script>

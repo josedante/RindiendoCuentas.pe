@@ -10,7 +10,7 @@
  * Cross-page links are always visible (including below the sm breakpoint) so informes stay
  * discoverable on phones; report pages still use the hamburger for in-page TOC.
  *
- * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen' | 'universitaria'.
+ * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen' | 'universitaria' | 'blindaje-institucional'.
  *        Omit on the hub (/) so no pill appears selected.
  * @prop {boolean} [showMobileToc] — When false, hides the hamburger (hub has no in-page TOC). Default true.
  */
@@ -26,6 +26,7 @@ const navLinks = [
   { href: '/leyes-de-gasto', label: 'Leyes de Gasto', slug: 'gasto' },
   { href: '/leyes-procrimen', label: 'Leyes Pro-Crimen', slug: 'procrimen' },
   { href: '/contrarreforma-universitaria', label: 'Contrarreforma', slug: 'universitaria' },
+  { href: '/blindaje-institucional', label: 'Blindaje', slug: 'blindaje-institucional' },
 ];
 ---
 

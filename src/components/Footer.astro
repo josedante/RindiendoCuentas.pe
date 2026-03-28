@@ -11,7 +11,7 @@
 
 interface Props {
   variant?: 'site' | 'report';
-  reportContext?: 'gasto' | 'procrimen' | 'universitaria';
+  reportContext?: 'gasto' | 'procrimen' | 'universitaria' | 'blindaje';
 }
 
 const { variant = 'report', reportContext = 'gasto' } = Astro.props;
@@ -26,13 +26,15 @@ const sources = [
 const methodologySite =
   'Cada informe del sitio reconstruye las votaciones a partir de actas del Pleno, resoluciones legislativas y el Diario de los Debates del Congreso, según el periodo indicado en esa sección. Los enlaces de esta página listan las fuentes primarias habituales.';
 
-const methodologyReport: Record<'gasto' | 'procrimen' | 'universitaria', string> = {
+const methodologyReport: Record<'gasto' | 'procrimen' | 'universitaria' | 'blindaje', string> = {
   gasto:
     'Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno, las resoluciones legislativas, y el Diario de los Debates del Congreso de la República del Perú. Los registros corresponden a las sesiones plenarias del mes de marzo de 2026.',
   procrimen:
     'Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno y documentación asociada del Congreso de la República del Perú. Los registros cubren las etapas legislativas de las leyes analizadas (2023–2024), con notas de procedencia por etapa donde aplica.',
   universitaria:
     'Los datos de votación fueron reconstruidos a partir de actas del Pleno, registros de la Comisión Permanente y fuentes parlamentarias del Congreso de la República del Perú, en el marco 2022–2025. El desglose de la Ley 32105 corresponde a la Comisión Permanente (subconjunto de congresistas), no al Pleno completo.',
+  blindaje:
+    'Las votaciones y el desglose por bancada fueron reconstruidos a partir del Diario de los Debates, comunicaciones del Congreso, agendas de comisión y cobertura de prensa verificada, en el marco 2023–2026. Los casos combinan la Subcomisión de Acusaciones Constitucionales, la Comisión Permanente y el Pleno. En la Denuncia Constitucional 509, donde la síntesis pública no individualiza a los 22 sufragantes, el texto del informe explicita un desglose agregado por ejes políticos.',
 };
 
 const methodologyParagraph =

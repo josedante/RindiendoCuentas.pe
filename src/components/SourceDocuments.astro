@@ -1,11 +1,13 @@
 ---
 /**
- * SourceDocuments.astro — Links to official vote-record PDFs on congreso.gob.pe.
+ * SourceDocuments.astro — Primary source links for an informe section.
  *
- * Renders a list of acta PDF links (Asistencias y Votaciones del Pleno). Files
- * are not mirrored on this site; users open the Congress portal directly.
+ * Typical use: PDF actas from Asistencias y Votaciones del Pleno (congreso.gob.pe).
+ * URLs may also be official HTML pages (comunicaciones.congreso.gob.pe), other PDFs,
+ * or verified press; labels should make the destination clear. Files are not
+ * mirrored on this site unless noted elsewhere.
  *
- * @prop {SourceDocument[]} documents — Array of source document references.
+ * @prop {SourceDocument[]} documents — Array of { label, url } references.
  */
 
 import type { SourceDocument } from '../data/types';
@@ -33,7 +35,7 @@ const { documents } = Astro.props;
             target="_blank"
             rel="noopener noreferrer"
             class="font-medium text-blue-700 underline decoration-blue-300 hover:text-blue-900"
-            title="PDF oficial en congreso.gob.pe"
+            title="Abrir en nueva pestaña"
           >
             {doc.label}
           </a>

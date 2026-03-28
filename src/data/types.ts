@@ -10,6 +10,10 @@
  * - Resoluciones legislativas
  * - Official congressional communications
  * - Convoca.pe investigative analysis (for pro-crime law cross-validation)
+ *
+ * Informe «Blindaje institucional»: matrices `BlindajeCase` en blindaje-cases.ts,
+ * reconstruidas desde esas fuentes y prensa verificada; metodología en
+ * public/documentos/blindaje-institucional/README.md.
  */
 
 /** A single parliamentary group's vote tally for one law. */
@@ -59,6 +63,23 @@ export interface VoteStage {
   dataProvenance?: VoteStageProvenance;
   /** Short note under the chart (methodology, PDF link hint, caveats). */
   sourceNote?: string;
+}
+
+/** Where a blindaje / antejuicio vote was held (informe blindaje institucional). */
+export type BlindajeVenue = 'sac' | 'comision-permanente' | 'pleno';
+
+/** One emblematic case: archive or shielding vote with per-bancada or per-imputado tallies. */
+export interface BlindajeCase {
+  id: string;
+  shortName: string;
+  fullName: string;
+  date: string;
+  venue: BlindajeVenue;
+  resultLine: string;
+  votes: PartyVote[];
+  sourceDocuments?: SourceDocument[];
+  /** Pie de página bajo el gráfico (procedencia, advertencias metodológicas). */
+  voteSourceNote?: string;
 }
 
 /** A reference to an official vote-record PDF on congreso.gob.pe. */

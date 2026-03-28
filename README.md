@@ -38,9 +38,11 @@ Este sitio transforma informes analíticos sobre el comportamiento legislativo d
 
 | Ruta | Contenido |
 |------|-----------|
-| `/` | Hub del sitio: acceso equilibrado a los dos informes |
+| `/` | Hub del sitio: acceso equilibrado a los informes |
 | `/leyes-de-gasto` | Informe largo — 5 leyes de expansión del gasto (marzo 2026) |
 | `/leyes-procrimen` | Informe largo — 6 leyes pro-crimen (2023–2024) |
+| `/contrarreforma-universitaria` | Informe largo — contrarreforma universitaria (2022–2025) |
+| `/blindaje-institucional` | Informe largo — casos emblemáticos de archivo / blindaje (2023–2026) |
 
 **Cambio relevante para enlaces antiguos:** antes el informe de gasto vivía en `/`. Ahora `/` es solo el hub; el texto completo de ese informe está en `/leyes-de-gasto`. Los fragmentos tipo `/#comparacion` dejaron de apuntar al informe de gasto.
 
@@ -55,11 +57,12 @@ src/
     HeroSection.astro         # Sección hero con estadísticas resumen (gasto)
     TableOfContents.astro     # Sidebar fijo (desktop) / drawer (mobile) con scroll-spy
     LawSection.astro          # Wrapper reutilizable para cada ley
+    CaseSection.astro         # Wrapper por caso de antejuicio / blindaje (informe blindaje)
     VoteChart.astro           # Gráfico Chart.js de barras horizontales apiladas
     VoteTable.astro           # Tabla HTML con ordenamiento por columnas
     VoteDisplay.astro         # Toggle entre vista de gráfico y tabla
     VoteStages.astro          # Tabs para leyes con múltiples etapas de votación
-    SourceDocuments.astro     # Enlaces a PDFs oficiales en congreso.gob.pe (actas)
+    SourceDocuments.astro     # Enlaces a fuentes (PDF actas, comunicaciones, prensa verificada)
     ComparisonChart.astro     # Gráfico comparativo entre leyes (gasto)
     CollapsibleText.astro     # Sección expandible (<details>/<summary>)
     Footer.astro              # Pie: metodología (sitio vs por informe), fuentes, créditos
@@ -69,15 +72,19 @@ src/
     pro-crime-laws.ts         # 6 leyes pro-crimen + etapas, notas de procedencia
     pro-crime-stages-votes.ts # Matrices PartyVote[] por etapa (procrimen)
     procrimen-bancada-mapping.ts # Orden y equivalencias de nombres de bancada
+    blindaje-cases.ts         # Cuatro casos emblemáticos (SAC, CP, Pleno) + votaciones
   pages/
-    index.astro               # Hub (/) — enlaces a los dos informes largos
+    index.astro               # Hub (/) — enlaces a los informes largos
     leyes-de-gasto.astro      # Informe largo — leyes de gasto (marzo 2026)
     leyes-procrimen.astro     # Informe largo — leyes pro-crimen (2023–2024)
+    contrarreforma-universitaria.astro # Informe largo — SUNEDU / universidades (2022–2025)
+    blindaje-institucional.astro # Informe largo — blindaje / casos emblemáticos (2023–2026)
   styles/
     global.css                # Tailwind CSS + tokens de diseño + tipografía
 public/
   documentos/
     votaciones-procrimen/     # README: metodología y enlaces a actas en el portal del Congreso
+    blindaje-institucional/   # README: metodología del informe blindaje / DC 509 agregado
 ```
 
 ## Desarrollo local
