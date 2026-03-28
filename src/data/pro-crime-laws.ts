@@ -8,6 +8,7 @@
  * desglose por bancada se obtuvo por transcripción manual o, cuando no hubo
  * acta descargable, por totales oficiales más distribución documentada (ver
  * `public/documentos/votaciones-procrimen/README.md` y `pro-crime-stages-votes.ts`).
+ * Los enlaces en la web apuntan al PDF oficial en congreso.gob.pe (no se hospedan copias).
  *
  * Cada VoteStage puede incluir `dataProvenance` y `sourceNote` (mostrados en la UI).
  */
@@ -97,15 +98,11 @@ export const proCrimeLaws: Law[] = [
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 13/04/2023 (1ra votación)',
-        path: '/documentos/votaciones-procrimen/ley-31751-primera-votacion-pleno-13-04-2023.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/BC4178D0A2AA9C4E0525899700524FBA/$FILE/Asis_vot_OFICIAL_13-04-2023.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/BC4178D0A2AA9C4E0525899700524FBA/$FILE/Asis_vot_OFICIAL_13-04-2023.pdf',
       },
       {
         label: 'Acta de Asistencia y Votación — Pleno 11/05/2023 (2da votación)',
-        path: '/documentos/votaciones-procrimen/ley-31751-segunda-votacion-pleno-11-05-2023.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/29472350CE0C791F052589B30062CAB5/$FILE/Asis_vot_OFICIAL_11-05-23.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/29472350CE0C791F052589B30062CAB5/$FILE/Asis_vot_OFICIAL_11-05-23.pdf',
       },
     ],
   },
@@ -149,15 +146,13 @@ export const proCrimeLaws: Law[] = [
         votes: ley31990Insistencia,
         dataProvenance: 'fuente_secundaria',
         sourceNote:
-          'Total oficial 89-15-2 (acta Pleno 14/12/2023). Desglose por bancada reconciliado con reconstrucción documental y ajuste de abstenciones para cuadrar con el acta; PDF hospedado en este sitio.',
+          'Total oficial 89-15-2 (acta Pleno 14/12/2023). Desglose por bancada reconciliado con reconstrucción documental y ajuste de abstenciones para cuadrar con el acta; contrastar con el PDF oficial del Congreso (enlace en documentos fuente).',
       },
     ],
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 14/12/2023 (Insistencia)',
-        path: '/documentos/votaciones-procrimen/ley-31990-insistencia-pleno-14-12-2023.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/B4F7B160875C072805258A85005AFFF5/$FILE/Asis_y_vot_OFICIAL_de_la_sesión_del-14-12-2023.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/B4F7B160875C072805258A85005AFFF5/$FILE/Asis_y_vot_OFICIAL_de_la_sesión_del-14-12-2023.pdf',
       },
     ],
   },
@@ -183,7 +178,7 @@ export const proCrimeLaws: Law[] = [
         votes: ley32107Pleno,
         dataProvenance: 'estimacion_proporcional',
         sourceNote:
-          'Totales oficiales 60-36-11 según Comunicaciones del Congreso (06/06/2024). Desglose por bancada: método Hamilton a partir del patrón de la votación de la modificatoria 32138 (16/10/2024), reescalado a esos totales; verificar en el PDF del acta del Pleno 06/06/2024 hospedado en este sitio.',
+          'Totales oficiales 60-36-11 según Comunicaciones del Congreso (06/06/2024). Desglose por bancada: método Hamilton a partir del patrón de la votación de la modificatoria 32138 (16/10/2024), reescalado a esos totales; verificar en el PDF oficial del Pleno 06/06/2024 (enlace en documentos fuente).',
       },
       {
         label: 'Segunda votación (Comisión Permanente)',
@@ -198,9 +193,7 @@ export const proCrimeLaws: Law[] = [
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 06/06/2024 (primera votación, PL 6951)',
-        path: '/documentos/votaciones-procrimen/ley-32107-pleno-06-06-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/EF0AF29DCB91CC5C05258B340065377D/$FILE/Asis_y_vot_de_la_sesión_del_6-6-2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/EF0AF29DCB91CC5C05258B340065377D/$FILE/Asis_y_vot_de_la_sesión_del_6-6-2024.pdf',
       },
     ],
   },
@@ -242,15 +235,11 @@ export const proCrimeLaws: Law[] = [
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 30/05/2024 (1ra votación)',
-        path: '/documentos/votaciones-procrimen/ley-32108-primera-votacion-pleno-30-05-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/63269A17867358D305258B2D0063AE77/$FILE/Asis_y_vot_de_la_sesión_del_30-5-2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/63269A17867358D305258B2D0063AE77/$FILE/Asis_y_vot_de_la_sesión_del_30-5-2024.pdf',
       },
       {
         label: 'Acta de Asistencia y Votación — Pleno 16/10/2024 (Modificatoria Ley 32138)',
-        path: '/documentos/votaciones-procrimen/ley-32108-modificatoria-pleno-16-10-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/4FCA4A4E8B40D3E805258BB8006FDC39/$FILE/Asis_y_vot_del_16_10_2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/4FCA4A4E8B40D3E805258BB8006FDC39/$FILE/Asis_y_vot_del_16_10_2024.pdf',
       },
     ],
   },
@@ -290,9 +279,7 @@ export const proCrimeLaws: Law[] = [
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 21/11/2024',
-        path: '/documentos/votaciones-procrimen/ley-32181-32182-pleno-21-11-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/3A18859F9196262905258BDC00623E7D/$FILE/Asis_y_vot_del_21_11_2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/3A18859F9196262905258BDC00623E7D/$FILE/Asis_y_vot_del_21_11_2024.pdf',
       },
     ],
   },
@@ -332,15 +319,11 @@ export const proCrimeLaws: Law[] = [
     sourceDocuments: [
       {
         label: 'Acta de Asistencia y Votación — Pleno 21/11/2024',
-        path: '/documentos/votaciones-procrimen/ley-32181-32182-pleno-21-11-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/3A18859F9196262905258BDC00623E7D/$FILE/Asis_y_vot_del_21_11_2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/3A18859F9196262905258BDC00623E7D/$FILE/Asis_y_vot_del_21_11_2024.pdf',
       },
       {
         label: 'Acta de Asistencia y Votación — Pleno 22/11/2024',
-        path: '/documentos/votaciones-procrimen/ley-32181-32182-pleno-22-11-2024.pdf',
-        sourceUrl:
-          'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/36DA964D8B7C547A05258BDD00772364/$FILE/Asis_y_vot_del_22_11_2024.pdf',
+        url: 'https://www2.congreso.gob.pe/Sicr/RelatAgenda/PlenoComiPerm20112016.nsf/Apleno/36DA964D8B7C547A05258BDD00772364/$FILE/Asis_y_vot_del_22_11_2024.pdf',
       },
     ],
   },

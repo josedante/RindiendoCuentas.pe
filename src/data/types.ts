@@ -57,14 +57,12 @@ export interface VoteStage {
   sourceNote?: string;
 }
 
-/** A reference to a hosted PDF source document. */
+/** A reference to an official vote-record PDF on congreso.gob.pe. */
 export interface SourceDocument {
   /** Display label for the link. */
   label: string;
-  /** Path relative to the site root (e.g. "/documentos/votaciones-procrimen/..."). */
-  path: string;
-  /** Original URL where the document was obtained. */
-  sourceUrl?: string;
+  /** Absolute HTTPS URL to the PDF on the Congress portal (Asistencias y Votaciones). */
+  url: string;
 }
 
 /** Metadata and vote breakdown for a single law. */
@@ -91,6 +89,6 @@ export interface Law {
   category?: LawCategory;
   /** Multiple vote stages when a law went through several rounds. */
   voteStages?: VoteStage[];
-  /** Hosted PDF source documents for transparency. */
+  /** Links to official PDF actas on the Congress portal. */
   sourceDocuments?: SourceDocument[];
 }

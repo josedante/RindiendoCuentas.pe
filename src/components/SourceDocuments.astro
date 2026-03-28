@@ -1,11 +1,9 @@
 ---
 /**
- * SourceDocuments.astro — Download links for hosted vote record PDFs.
+ * SourceDocuments.astro — Links to official vote-record PDFs on congreso.gob.pe.
  *
- * Renders a list of PDF source documents with download icons, links to
- * the hosted copy, and optional link to the original source URL.
- * Designed for the "Leyes Pro-Crimen" section where original scanned
- * vote records are hosted for public transparency.
+ * Renders a list of acta PDF links (Asistencias y Votaciones del Pleno). Files
+ * are not mirrored on this site; users open the Congress portal directly.
  *
  * @prop {SourceDocument[]} documents — Array of source document references.
  */
@@ -31,24 +29,14 @@ const { documents } = Astro.props;
       {documents.map((doc) => (
         <li class="flex flex-wrap items-start gap-2 text-sm">
           <a
-            href={doc.path}
+            href={doc.url}
             target="_blank"
             rel="noopener noreferrer"
             class="font-medium text-blue-700 underline decoration-blue-300 hover:text-blue-900"
+            title="PDF oficial en congreso.gob.pe"
           >
             {doc.label}
           </a>
-          {doc.sourceUrl && (
-            <a
-              href={doc.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-xs text-slate-400 hover:text-slate-600"
-              title="Enlace original en congreso.gob.pe"
-            >
-              (fuente original)
-            </a>
-          )}
         </li>
       ))}
     </ul>

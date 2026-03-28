@@ -59,7 +59,7 @@ src/
     VoteTable.astro           # Tabla HTML con ordenamiento por columnas
     VoteDisplay.astro         # Toggle entre vista de gráfico y tabla
     VoteStages.astro          # Tabs para leyes con múltiples etapas de votación
-    SourceDocuments.astro     # Links de descarga de PDFs fuente
+    SourceDocuments.astro     # Enlaces a PDFs oficiales en congreso.gob.pe (actas)
     ComparisonChart.astro     # Gráfico comparativo entre leyes (gasto)
     CollapsibleText.astro     # Sección expandible (<details>/<summary>)
     Footer.astro              # Pie: metodología (sitio vs por informe), fuentes, créditos
@@ -77,8 +77,7 @@ src/
     global.css                # Tailwind CSS + tokens de diseño + tipografía
 public/
   documentos/
-    votaciones-procrimen/     # PDFs escaneados de actas de votación del Congreso
-      README.md               # Proveniencia y enlaces originales
+    votaciones-procrimen/     # README: metodología y enlaces a actas en el portal del Congreso
 ```
 
 ## Desarrollo local
@@ -126,7 +125,7 @@ Para nuevas votaciones: añadir filas en `pro-crime-stages-votes.ts`, referencia
 - Plataforma del Estado Peruano (gob.pe)
 
 **Leyes pro-crimen:**
-- Actas de Asistencia y Votación del Pleno (PDFs en `/documentos/votaciones-procrimen/`, ver README de esa carpeta)
+- Actas de Asistencia y Votación del Pleno (enlaces directos en la página y en `public/documentos/votaciones-procrimen/README.md`)
 - Desglose por bancada: transcripción / proporcional / fuente secundaria según etapa
 - Convoca.pe, HRW, La República, Infobae (contexto y verificación cruzada)
 
