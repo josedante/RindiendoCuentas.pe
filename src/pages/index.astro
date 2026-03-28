@@ -2,8 +2,9 @@
 /**
  * index.astro — Site hub (route: /).
  *
- * Entry point that presents both investigations with equal prominence. Longform reports live at
- * /leyes-de-gasto and /leyes-procrimen. Header nav links to those routes; logo also returns here.
+ * Entry point that presents informes with equal prominence. Longform reports live at
+ * /leyes-de-gasto, /leyes-procrimen y /contrarreforma-universitaria. Header links those routes;
+ * logo returns here.
  * Skip link targets #main-content (see Layout skipTargetId).
  */
 
@@ -14,7 +15,7 @@ import Footer from '../components/Footer.astro';
 
 const hubTitle = 'RindiendoCuentas.pe — Votaciones del Congreso';
 const hubDescription =
-  'Informes interactivos sobre votaciones del Pleno del Congreso peruano: leyes de expansión del gasto público (marzo 2026) y leyes pro-crimen (2023–2024).';
+  'Informes interactivos sobre votaciones del Congreso peruano: gasto público (marzo 2026), leyes pro-crimen (2023–2024) y contrarreforma universitaria (2022–2025).';
 ---
 
 <Layout title={hubTitle} description={hubDescription} skipTargetId="main-content">

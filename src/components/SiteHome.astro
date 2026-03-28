@@ -2,8 +2,9 @@
 /**
  * SiteHome.astro — Marketing-style hub body for the site root (/).
  *
- * Presents the two longform investigations as equal-weight cards with CTAs to
- * /leyes-de-gasto and /leyes-procrimen. Styling aligns with HeroSection / report heroes:
+ * Presents longform investigations as equal-weight cards with CTAs to
+ * /leyes-de-gasto, /leyes-procrimen y /contrarreforma-universitaria. Styling aligns with
+ * HeroSection / report heroes:
  * slate palette, rounded cards, accent brand token on one card accent.
  *
  * No props; consumed only from src/pages/index.astro. Global nav remains in Header.astro.
@@ -34,6 +35,18 @@ const investigations = [
     ],
     cta: 'Abrir informe pro-crimen',
   },
+  {
+    href: '/contrarreforma-universitaria',
+    title: 'Contrarreforma universitaria',
+    meta: '3 hitos · 2022–2025',
+    accent: 'border-l-violet-500',
+    chipClass: 'bg-violet-100 text-violet-900',
+    body: [
+      'Ley 31520 (captura SUNEDU), Ley 32105 (licenciamiento permanente y virtualidad) y creación en bloque de 20 universidades nacionales.',
+      'Votaciones reconstruidas: Pleno, Comisión Permanente y comparación entre bancadas.',
+    ],
+    cta: 'Abrir informe universitario',
+  },
 ] as const;
 ---
 
@@ -61,7 +74,7 @@ const investigations = [
 
 <div class="mx-auto max-w-5xl px-4 py-12 lg:px-8">
   <h2 class="sr-only">Informes disponibles</h2>
-  <div class="grid gap-6 md:grid-cols-2">
+  <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
     {investigations.map((item) => (
       <article
         class={`flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 ${item.accent} border-l-4`}

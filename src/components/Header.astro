@@ -7,10 +7,10 @@
  * dispatches a custom event consumed by TableOfContents to open
  * the mobile drawer on longform report pages.
  *
- * Cross-page links are always visible (including below the sm breakpoint) so both
- * investigations stay discoverable on phones; report pages still use the hamburger for in-page TOC.
+ * Cross-page links are always visible (including below the sm breakpoint) so informes stay
+ * discoverable on phones; report pages still use the hamburger for in-page TOC.
  *
- * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen'.
+ * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen' | 'universitaria'.
  *        Omit on the hub (/) so no pill appears selected.
  * @prop {boolean} [showMobileToc] — When false, hides the hamburger (hub has no in-page TOC). Default true.
  */
@@ -25,6 +25,7 @@ const { currentPage, showMobileToc = true } = Astro.props;
 const navLinks = [
   { href: '/leyes-de-gasto', label: 'Leyes de Gasto', slug: 'gasto' },
   { href: '/leyes-procrimen', label: 'Leyes Pro-Crimen', slug: 'procrimen' },
+  { href: '/contrarreforma-universitaria', label: 'Contrarreforma', slug: 'universitaria' },
 ];
 ---
 

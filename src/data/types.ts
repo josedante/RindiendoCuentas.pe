@@ -25,10 +25,14 @@ export interface PartyVote {
 }
 
 /** The legislative approval mechanism used. */
-export type ApprovalMechanism = 'insistencia' | 'promulgacion' | 'aprobacion';
+export type ApprovalMechanism =
+  | 'insistencia'
+  | 'promulgacion'
+  | 'aprobacion'
+  | 'comision-permanente';
 
 /** Thematic category for grouping laws on separate pages. */
-export type LawCategory = 'gasto' | 'procrimen';
+export type LawCategory = 'gasto' | 'procrimen' | 'universitaria';
 
 /** How per-bancada numbers were obtained (shown on leyes-procrimen). */
 export type VoteStageProvenance =

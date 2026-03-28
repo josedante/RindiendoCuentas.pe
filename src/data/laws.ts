@@ -197,4 +197,5 @@ export const mechanismLabels: Record<string, string> = {
   insistencia: 'Aprobado por insistencia',
   promulgacion: 'Promulgado por el Ejecutivo',
   aprobacion: 'Aprobado en el Pleno',
+  'comision-permanente': 'Aprobado en Comisión Permanente',
 };

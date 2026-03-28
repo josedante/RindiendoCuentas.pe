@@ -1,0 +1,473 @@
+---
+/**
+ * contrarreforma-universitaria.astro — Desmantelamiento de la reforma universitaria (2022–2025).
+ *
+ * Route: /contrarreforma-universitaria
+ */
+
+import Layout from '../components/Layout.astro';
+import Header from '../components/Header.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import LawSection from '../components/LawSection.astro';
+import CollapsibleText from '../components/CollapsibleText.astro';
+import VoteDisplay from '../components/VoteDisplay.astro';
+import SourceDocuments from '../components/SourceDocuments.astro';
+import ComparisonChart from '../components/ComparisonChart.astro';
+import Footer from '../components/Footer.astro';
+
+import { getTotals } from '../data/laws';
+import {
+  contrarreformaLaws,
+  contrarreformaPartyNames,
+} from '../data/contrarreforma-laws';
+
+const tocItems = [
+  { id: 'introduccion', label: 'Introducción' },
+  ...contrarreformaLaws.map((law, i) => ({
+    id: law.id,
+    label: `${i + 1}. ${law.shortName.split(' — ')[0]}`,
+  })),
+  { id: 'comparacion', label: 'Comparación entre hitos' },
+  { id: 'resumen', label: 'Resumen de Votaciones' },
+  { id: 'implicancias', label: 'Implicancias' },
+];
+
+const totalHitos = contrarreformaLaws.length;
+const aggregated = contrarreformaLaws.reduce(
+  (acc, law) => {
+    const t = getTotals(law);
+    return {
+      aFavor: acc.aFavor + t.aFavor,
+      enContra: acc.enContra + t.enContra,
+      abstencion: acc.abstencion + t.abstencion,
+    };
+  },
+  { aFavor: 0, enContra: 0, abstencion: 0 },
+);
+
+const byInsistencia = contrarreformaLaws.filter((l) => l.mechanism === 'insistencia')
+  .length;
+
+const summaryData = JSON.stringify(
+  contrarreformaLaws.map((law) => {
+    const t = getTotals(law);
+    return {
+      shortName: law.shortName,
+      lawNumber: law.lawNumber,
+      stages: [
+        {
+          label: 'Votación reconstruida',
+          date: law.date,
+          aFavor: t.aFavor,
+          enContra: t.enContra,
+          abstencion: t.abstencion,
+        },
+      ],
+    };
+  }),
+);
+---
+
+<Layout
+  title="Contrarreforma universitaria — Votaciones del Congreso (2022–2025)"
+  description="Tres hitos legislativos que revirtieron la Ley Universitaria y la SUNEDU: Ley 31520, Ley 32105 y creación de 20 universidades. Votaciones por bancada, gráficos y fuentes."
+>
+  <Header currentPage="universitaria" />
+  <TableOfContents items={tocItems} />
+
+  <div class="pt-16 lg:ml-64">
+    <section class="relative overflow-hidden bg-slate-900 px-4 py-16 text-white sm:py-24 lg:px-8">
+      <div
+        class="pointer-events-none absolute inset-0 opacity-5"
+        style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+      >
+      </div>
+
+      <div class="relative mx-auto max-w-4xl">
+        <p class="mb-4 text-sm font-semibold uppercase tracking-widest text-violet-300">
+          Investigación · 2022–2025
+        </p>
+        <h1 class="text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-5xl">
+          Contrarreforma universitaria en el Congreso
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+          Análisis del desmantelamiento escalonado de la Ley 30220 y la SUNEDU: captura del
+          Consejo Directivo, licenciamiento permanente con virtualidad irrestricta, y creación en
+          bloque de veinte universidades nacionales sin respaldo fiscal explícito.
+        </p>
+
+        <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{totalHitos}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Hitos analizados</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{totalHitos}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Votaciones reconstruidas</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">{aggregated.aFavor}</p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Suma «a favor» (total)</p>
+          </div>
+          <div class="rounded-lg bg-white/10 px-4 py-3 backdrop-blur-sm">
+            <p class="text-3xl font-bold">
+              {byInsistencia}/{totalHitos}
+            </p>
+            <p class="mt-1 text-xs font-medium text-slate-400">Por insistencia</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="mx-auto max-w-4xl px-4 py-12 lg:px-8">
+      <section id="introduccion" class="scroll-mt-20 pb-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">Introducción</h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            La <strong>Ley Universitaria (Ley 30220)</strong> y la <strong>SUNEDU</strong>
+            instauraron el licenciamiento obligatorio y la fiscalización de la calidad en la
+            educación superior. Entre 2022 y 2025, un arco parlamentario transversal — con
+            convergencias entre bancadas de derecha, centro y sectores de izquierda — impulsó
+            normas que debilitaron la autonomía técnica del regulador, fijaron reglas más laxas
+            para el licenciamiento y la oferta virtual, y aprobaron la creación masiva de nuevas
+            universidades públicas sin partidas presupuestales acordes.
+          </p>
+          <p>
+            Este informe sintetiza el contexto y reconstruye el <strong>voto por bancada</strong> en
+            tres momentos clave: la <strong>Ley 31520</strong> (insistencia en el Pleno, julio de
+            2022), la <strong>Ley 32105</strong> (segunda votación en Comisión Permanente, 2024) y
+            la <strong>aprobación en el Pleno</strong> del paquete de veinte universidades
+            nacionales (marzo de 2025).
+          </p>
+        </div>
+
+        <CollapsibleText summaryLabel="Leer contexto completo">
+          <div class="space-y-4">
+            <p>
+              La tensión entre modernización del sistema y captura por intereses del mercado
+              educativo no es nueva: antes de 2014 predominó un modelo endógeno asociado a la ANR.
+              La SUNEDU interrumpió ese esquema con evaluaciones y denegatorias que obligaron a
+              invertir en infraestructura y calidad. La reacción política articuló una coalición en
+              la que conviven defensas del lucro educativo, presiones corporativas y discursos
+              populistas contra la «tecnocracia» limeña.
+            </p>
+            <p>
+              El trámite de la Ley 31520 incluyó observación del Ejecutivo y
+              <strong>aprobación por insistencia</strong>; el debate sobre calidad versus
+              «autonomía universitaria» en sentido retórico acompañó la reforma del Consejo
+              Directivo. La Ley 32105 se procesó en receso parlamentario vía Comisión Permanente,
+              con menor exposición mediática. La tercera fase consolidó la lógica clientelar
+              regional, con advertencias del MEF sobre viabilidad fiscal y redacción en términos de
+              «autorización» a otros niveles de gobierno.
+            </p>
+          </div>
+        </CollapsibleText>
+      </section>
+
+      {contrarreformaLaws.map((law, i) => (
+        <LawSection
+          id={law.id}
+          shortName={law.shortName}
+          fullName={law.fullName}
+          lawNumber={law.lawNumber}
+          date={law.date}
+          mechanism={law.mechanism}
+          fiscalImpact={law.fiscalImpact}
+          index={i + 1}
+          impactLabel="Impacto normativo"
+        >
+          {law.id === 'ley-31520-sunedu' && (
+            <CollapsibleText summaryLabel="Leer análisis del hito">
+              <div class="space-y-4">
+                <p>
+                  La norma modificó el artículo 17 de la Ley Universitaria: el Consejo Directivo de
+                  la SUNEDU pasó a integrar representación de universidades públicas y privadas,
+                  entre otros actores, reintroduciendo un conflicto de interés estructural (los
+                  regulados inciden en el regulador). El trámite incluyó litigio constitucional y
+                  debate sobre el amparo a favor de la educación de calidad frente a la ley.
+                </p>
+                <p>
+                  En el Pleno del 13 de julio de 2022, la <strong>insistencia</strong> alcanzó
+                  76 votos a favor, 39 en contra y 4 abstenciones: bloques de derecha y centro
+                  aportaron la mayoría; Perú Libre y el Bloque Magisterial sumaron votos a favor;
+                  Avanza País y Cambio Democrático–Juntos por el Perú votaron en contra de manera
+                  coherente.
+                </p>
+              </div>
+            </CollapsibleText>
+          )}
+
+          {law.id === 'ley-32105-licenciamiento' && (
+            <CollapsibleText summaryLabel="Leer análisis del hito">
+              <div class="space-y-4">
+                <p>
+                  La ley alteró el marco de licenciamiento y abrió la puerta al
+                  <strong> licenciamiento permanente</strong> y a la oferta
+                  <strong> 100% virtual</strong> sin el mismo ciclo de reevaluación que el modelo
+                  original. Quienes la impulsaron —incluida la iniciativa asociada al congresista
+                  Héctor Valer (Somos Perú)— lograron la segunda votación en la Comisión Permanente,
+                  instancia de menor tamaño y menor foco público que el Pleno en período ordinario.
+                </p>
+                <p>
+                  El resultado (17 a favor, 6 en contra, 3 abstenciones) replica la correlación de
+                  la mayoría conservadora-populista en un subconjunto de parlamentarios
+                  delegados en la Permanente.
+                </p>
+              </div>
+            </CollapsibleText>
+          )}
+
+          {law.id === 'veinte-universidades-nacionales' && (
+            <CollapsibleText summaryLabel="Leer análisis del hito">
+              <div class="space-y-4">
+                <p>
+                  En segunda votación en el Pleno (20 de marzo de 2025) se aprobó la creación de
+                  veinte universidades nacionales en quince departamentos, sin evaluaciones
+                  individuales de pertinencia ni financiamiento asegurado en ley. El MEF advirtió la
+                  ausencia de capacidad fiscal para ejecutar el despliegue; la técnica legislativa
+                  de «facultar» a otros niveles buscó eludir la iniciativa de gasto reservada al
+                  Ejecutivo.
+                </p>
+                <p>
+                  El resultado <strong>63-0-17</strong> (sin votos en contra) ilustra el costo
+                  electoral percibido de oponerse: la disidencia se expresó casi solo en
+                  abstenciones (Avanza País, Juntos por el Perú, un segmento de Acción Popular y no
+                  agrupados).
+                </p>
+              </div>
+            </CollapsibleText>
+          )}
+
+          <VoteDisplay votes={law.votes} lawId={law.id} />
+
+          {law.sourceDocuments && law.sourceDocuments.length > 0 && (
+            <SourceDocuments documents={law.sourceDocuments} />
+          )}
+        </LawSection>
+      ))}
+
+      <ComparisonChart
+        laws={contrarreformaLaws}
+        partyNames={[...contrarreformaPartyNames]}
+        sectionId="comparacion"
+        heading="Comparación entre hitos"
+        description="Votos «A Favor» de cada bancada en las tres votaciones reconstruidas (escalas distintas: Pleno completo vs Comisión Permanente)."
+        chartCanvasId="comparison-chart-contrarreforma"
+        ariaLabel="Gráfico comparativo de votaciones de la contrarreforma universitaria"
+        lawColors={['#1e40af', '#059669', '#7c3aed']}
+      />
+
+      <section id="resumen" class="scroll-mt-20 py-12">
+        <h2 class="mb-2 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Resumen de Votaciones
+        </h2>
+        <p class="mb-6 text-sm text-slate-500">
+          Totales por hito (una votación reconstruida por norma o dictamen).
+        </p>
+
+        <div
+          class="summary-chart-wrapper-uni rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+          data-summary={summaryData}
+        >
+          <canvas
+            id="summary-chart-uni"
+            class="w-full"
+            role="img"
+            aria-label="Gráfico resumen de votaciones de la contrarreforma universitaria"
+          ></canvas>
+        </div>
+
+        <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          <p class="font-semibold">Nota sobre los datos</p>
+          <p class="mt-1">
+            Los desgloses por bancada provienen de la reconstrucción documentada en la
+            investigación fuente. La votación de la Ley 32105 corresponde a la Comisión Permanente:
+            los totales por bancada reflejan delegados en ese órgano, no el Pleno completo. Compare
+            con precaución frente a las votaciones de insistencia y de segunda votación en Pleno.
+          </p>
+        </div>
+      </section>
+
+      <section id="implicancias" class="scroll-mt-20 py-12">
+        <h2 class="mb-6 text-2xl font-bold text-slate-900 lg:text-3xl">
+          Implicancias estructurales
+        </h2>
+
+        <div class="space-y-4 text-base leading-relaxed">
+          <p>
+            La secuencia 31520 → 32105 → creación masiva de universidades no es un conjunto de
+            episodios aislados: es una <strong>regresión coordinada</strong> del marco de calidad y
+            de la independencia del regulador, seguida de reglas que debilitan la renovación
+            periódica del licenciamiento y de promesas territoriales desacopladas del presupuesto.
+          </p>
+        </div>
+
+        <CollapsibleText summaryLabel="Leer análisis completo">
+          <div class="space-y-6">
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">Calidad y empleabilidad</h3>
+              <p>
+                Sin ciclos de mejora continua y con virtualidad sin anclaje pedagógico equivalente,
+                el riesgo es la proliferación de títulos de bajo valor y el deterioro del capital
+                humano esperado por las familias y el mercado laboral formal.
+              </p>
+            </div>
+            <div>
+              <h3 class="mb-2 text-lg font-bold text-slate-800">Finanzas públicas y expectativas</h3>
+              <p>
+                Crear universidades «en papel» genera demandas legítimas en las regiones que el
+                Estado puede no poder atender; la frustración posterior erosiona la confianza
+                institucional y presiona al Ejecutivo sin que el Congreso asuma el costo político
+                pleno del gasto.
+              </p>
+            </div>
+            <p class="rounded-lg border-l-4 border-violet-500 bg-violet-50 px-5 py-4 text-sm font-medium text-slate-800">
+              Registrar estas votaciones permite contrastar discursos sobre autonomía y
+              descentralización con el comportamiento agregado de las bancadas y con los incentivos
+              electorales y corporativos del periodo 2021–2026.
+            </p>
+          </div>
+        </CollapsibleText>
+      </section>
+
+      <div class="grid gap-6 sm:grid-cols-2">
+        <section class="scroll-mt-20 rounded-xl border border-blue-200 bg-blue-50 p-6">
+          <h3 class="text-lg font-bold text-slate-900">Leyes de gasto público</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            Paquete de expansión del gasto en marzo de 2026, con votaciones en el Pleno.
+          </p>
+          <a
+            href="/leyes-de-gasto"
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+          >
+            Abrir informe
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </section>
+        <section class="scroll-mt-20 rounded-xl border border-red-200 bg-red-50 p-6">
+          <h3 class="text-lg font-bold text-slate-900">Leyes Pro-Crimen</h3>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">
+            Seis normas que debilitan la persecución penal, con votaciones por etapa.
+          </p>
+          <a
+            href="/leyes-procrimen"
+            class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+          >
+            Abrir informe
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <Footer reportContext="universitaria" />
+  </div>
+</Layout>
+
+<script>
+  import { Chart, registerables } from 'chart.js';
+  Chart.register(...registerables);
+
+  interface StageSummary {
+    label: string;
+    date: string;
+    aFavor: number;
+    enContra: number;
+    abstencion: number;
+  }
+
+  interface LawSummary {
+    shortName: string;
+    lawNumber: string | null;
+    stages: StageSummary[];
+  }
+
+  const wrapper = document.querySelector('.summary-chart-wrapper-uni') as HTMLElement | null;
+  if (wrapper) {
+    const laws: LawSummary[] = JSON.parse(wrapper.dataset.summary || '[]');
+    const canvas = document.getElementById('summary-chart-uni') as HTMLCanvasElement;
+
+    const labels: string[] = [];
+    const aFavorData: number[] = [];
+    const enContraData: number[] = [];
+    const abstencionData: number[] = [];
+
+    laws.forEach((law) => {
+      law.stages.forEach((stage) => {
+        const lawLabel = law.lawNumber ? `Ley ${law.lawNumber}` : law.shortName.split(' — ')[0];
+        labels.push(`${lawLabel}\n${stage.label}`);
+        aFavorData.push(stage.aFavor);
+        enContraData.push(stage.enContra);
+        abstencionData.push(stage.abstencion);
+      });
+    });
+
+    canvas.style.height = `${labels.length * 36 + 80}px`;
+
+    new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'A Favor',
+            data: aFavorData,
+            backgroundColor: '#059669',
+            borderRadius: 3,
+          },
+          {
+            label: 'En Contra',
+            data: enContraData,
+            backgroundColor: '#e11d48',
+            borderRadius: 3,
+          },
+          {
+            label: 'Abstención',
+            data: abstencionData,
+            backgroundColor: '#f59e0b',
+            borderRadius: 3,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 12 },
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'rectRounded',
+            },
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: {
+              stepSize: 10,
+              font: { family: 'Inter, system-ui, sans-serif', size: 11 },
+            },
+            grid: { color: '#e2e8f0' },
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              font: { family: 'Inter, system-ui, sans-serif', size: 10 },
+              autoSkip: false,
+            },
+            grid: { display: false },
+          },
+        },
+      },
+    });
+  }
+</script>
