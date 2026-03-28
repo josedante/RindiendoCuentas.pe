@@ -8,16 +8,23 @@
  *
  * @prop {string} title — Page <title> content.
  * @prop {string} [description] — Meta description for SEO.
+ * @prop {string} [skipTargetId] — Fragment id for the skip-to-content link (default: introduccion).
+ *        Use "main-content" on the hub where that id is on <main>.
+ *
+ * Note: og:url and canonical currently point at the site root for all pages; pass path-aware
+ * values here later if you need per-route SEO accuracy.
  */
 
 interface Props {
   title: string;
   description?: string;
+  skipTargetId?: string;
 }
 
 const {
   title,
   description = 'Análisis interactivo de las votaciones del Congreso peruano sobre leyes de expansión del gasto público — Marzo 2026.',
+  skipTargetId = 'introduccion',
 } = Astro.props;
 
 const siteName = 'Rindiendocuentas.pe';
@@ -79,7 +86,7 @@ const siteUrl = 'https://rindiendocuentas.pe';
   </head>
   <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
     <a
-      href="#introduccion"
+      href={`#${skipTargetId}`}
       class="fixed top-0 left-0 z-[100] -translate-y-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-transform focus:translate-y-0"
     >
       Saltar al contenido principal

@@ -1,0 +1,92 @@
+---
+/**
+ * SiteHome.astro — Marketing-style hub body for the site root (/).
+ *
+ * Presents the two longform investigations as equal-weight cards with CTAs to
+ * /leyes-de-gasto and /leyes-procrimen. Styling aligns with HeroSection / report heroes:
+ * slate palette, rounded cards, accent brand token on one card accent.
+ *
+ * No props; consumed only from src/pages/index.astro. Global nav remains in Header.astro.
+ */
+
+const investigations = [
+  {
+    href: '/leyes-de-gasto',
+    title: 'Leyes de expansión del gasto público',
+    meta: '5 leyes · marzo 2026',
+    accent: 'border-l-accent',
+    chipClass: 'bg-accent-light text-slate-800',
+    body: [
+      'Análisis estructural y registro nominal de votaciones en el Pleno durante la hiperactividad legislativa previa a las elecciones generales de abril de 2026.',
+      'Pensiones, CAS, fuerzas del orden, veteranos y salud: impacto fiscal y comportamiento de las bancadas.',
+    ],
+    cta: 'Abrir informe de gasto',
+  },
+  {
+    href: '/leyes-procrimen',
+    title: 'Leyes Pro-Crimen',
+    meta: '6 leyes · 2023–2024',
+    accent: 'border-l-red-500',
+    chipClass: 'bg-red-100 text-red-900',
+    body: [
+      'Seis normas que, según el Ministerio Público y medios de investigación, debilitan la persecución penal y la lucha contra la corrupción y el crimen organizado.',
+      'Votaciones por etapa legislativa, contexto y documentos fuente (PDFs del Pleno).',
+    ],
+    cta: 'Abrir informe pro-crimen',
+  },
+] as const;
+---
+
+<div class="relative overflow-hidden bg-slate-900 px-4 py-14 text-white sm:py-20 lg:px-8">
+  <div
+    class="pointer-events-none absolute inset-0 opacity-5"
+    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;40&quot; height=&quot;40&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M0 0h40v40H0z&quot; fill=&quot;none&quot; stroke=&quot;%23fff&quot; stroke-width=&quot;.5&quot;/%3E%3C/svg%3E');"
+  >
+  </div>
+
+  <div class="relative mx-auto max-w-4xl text-center">
+    <p class="text-sm font-semibold uppercase tracking-widest text-slate-400">
+      Transparencia legislativa
+    </p>
+    <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
+      Votaciones del Congreso, <span class="text-accent">hechas legibles</span>
+    </h1>
+    <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
+      RindiendoCuentas.pe reconstruye y publica el registro nominal de votaciones del Pleno del
+      Congreso de la República del Perú, con contexto analítico y fuentes primarias. Elige un
+      informe para explorar datos, gráficos y documentos.
+    </p>
+  </div>
+</div>
+
+<div class="mx-auto max-w-5xl px-4 py-12 lg:px-8">
+  <h2 class="sr-only">Informes disponibles</h2>
+  <div class="grid gap-6 md:grid-cols-2">
+    {investigations.map((item) => (
+      <article
+        class={`flex flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 ${item.accent} border-l-4`}
+      >
+        <div class="flex flex-wrap items-center gap-2">
+          <span class={`rounded-full px-3 py-1 text-xs font-semibold ${item.chipClass}`}>
+            {item.meta}
+          </span>
+        </div>
+        <h3 class="mt-4 text-xl font-bold text-slate-900 sm:text-2xl">{item.title}</h3>
+        <div class="mt-4 flex flex-1 flex-col gap-3 text-sm leading-relaxed text-slate-600">
+          {item.body.map((p) => (
+            <p>{p}</p>
+          ))}
+        </div>
+        <a
+          href={item.href}
+          class="mt-8 inline-flex w-fit items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
+        >
+          {item.cta}
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
+      </article>
+    ))}
+  </div>
+</div>

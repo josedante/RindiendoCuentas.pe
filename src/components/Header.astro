@@ -5,19 +5,25 @@
  * Fixed at the top of the viewport. Contains the site brand name,
  * cross-page navigation links, and a mobile menu toggle button that
  * dispatches a custom event consumed by TableOfContents to open
- * the mobile drawer.
+ * the mobile drawer on longform report pages.
  *
- * @prop {string} [currentPage] — Slug of the active page for nav highlighting.
+ * Cross-page links are always visible (including below the sm breakpoint) so both
+ * investigations stay discoverable on phones; report pages still use the hamburger for in-page TOC.
+ *
+ * @prop {string} [currentPage] — Slug of the active page for nav highlighting: 'gasto' | 'procrimen'.
+ *        Omit on the hub (/) so no pill appears selected.
+ * @prop {boolean} [showMobileToc] — When false, hides the hamburger (hub has no in-page TOC). Default true.
  */
 
 interface Props {
   currentPage?: string;
+  showMobileToc?: boolean;
 }
 
-const { currentPage } = Astro.props;
+const { currentPage, showMobileToc = true } = Astro.props;
 
 const navLinks = [
-  { href: '/', label: 'Leyes de Gasto', slug: 'gasto' },
+  { href: '/leyes-de-gasto', label: 'Leyes de Gasto', slug: 'gasto' },
   { href: '/leyes-procrimen', label: 'Leyes Pro-Crimen', slug: 'procrimen' },
 ];
 ---
@@ -25,42 +31,46 @@ const navLinks = [
 <header
   class="fixed top-0 right-0 left-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur-sm"
 >
-  <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 lg:px-8">
-    <a href="/" class="flex items-center gap-2 text-slate-900 no-underline">
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 lg:px-8">
+    <a href="/" class="flex min-w-0 flex-shrink-0 items-center gap-2 text-slate-900 no-underline">
       <span class="text-xl font-extrabold tracking-tight">
         Rindiendo<span class="text-accent">Cuentas</span>
       </span>
       <span class="hidden text-xs font-medium tracking-wide text-slate-400 sm:inline">.pe</span>
     </a>
 
-    {/* Cross-page navigation */}
-    <nav class="hidden items-center gap-1 sm:flex" aria-label="Secciones del sitio">
-      {navLinks.map((link) => (
-        <a
-          href={link.href}
-          class={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-            currentPage === link.slug
-              ? 'bg-slate-900 text-white'
-              : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-          aria-current={currentPage === link.slug ? 'page' : undefined}
-        >
-          {link.label}
-        </a>
-      ))}
-    </nav>
+    <div class="flex flex-shrink-0 items-center gap-1 sm:gap-2">
+      {/* Cross-page navigation — always visible (including narrow viewports). */}
+      <nav class="flex items-center gap-0.5 sm:gap-1" aria-label="Secciones del sitio">
+        {navLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`rounded-md px-2 py-1.5 text-xs font-medium transition-colors sm:px-3 sm:text-sm ${
+              currentPage === link.slug
+                ? 'bg-slate-900 text-white'
+                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+            }`}
+            aria-current={currentPage === link.slug ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+      </nav>
 
-    <!-- Mobile TOC toggle — dispatches event for TableOfContents drawer -->
-    <button
-      id="mobile-toc-toggle"
-      type="button"
-      class="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 lg:hidden"
-      aria-label="Abrir tabla de contenidos"
-    >
-      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-      </svg>
-    </button>
+      <!-- Mobile TOC toggle — only on longform pages that mount TableOfContents.astro -->
+      {showMobileToc && (
+        <button
+          id="mobile-toc-toggle"
+          type="button"
+          class="rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 lg:hidden"
+          aria-label="Abrir tabla de contenidos"
+        >
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+      )}
+    </div>
   </div>
 </header>
 

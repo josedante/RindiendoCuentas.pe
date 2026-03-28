@@ -30,6 +30,13 @@ export type ApprovalMechanism = 'insistencia' | 'promulgacion' | 'aprobacion';
 /** Thematic category for grouping laws on separate pages. */
 export type LawCategory = 'gasto' | 'procrimen';
 
+/** How per-bancada numbers were obtained (shown on leyes-procrimen). */
+export type VoteStageProvenance =
+  | 'acta_oficial'
+  | 'acta_total_solamente'
+  | 'fuente_secundaria'
+  | 'estimacion_proporcional';
+
 /**
  * A single stage in a multi-vote legislative process.
  * Laws may pass through primera votación, segunda votación,
@@ -44,6 +51,10 @@ export interface VoteStage {
   venue: 'pleno' | 'comision-permanente';
   /** Per-group vote breakdown for this stage. */
   votes: PartyVote[];
+  /** Optional classification for data quality / audit trail. */
+  dataProvenance?: VoteStageProvenance;
+  /** Short note under the chart (methodology, PDF link hint, caveats). */
+  sourceNote?: string;
 }
 
 /** A reference to a hosted PDF source document. */

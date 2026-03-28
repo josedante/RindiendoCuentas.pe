@@ -12,7 +12,7 @@
  * @prop {string} lawId — Unique law identifier for scoping DOM elements.
  */
 
-import type { VoteStage } from '../data/types';
+import type { VoteStage, VoteStageProvenance } from '../data/types';
 import VoteDisplay from './VoteDisplay.astro';
 
 interface Props {
@@ -25,6 +25,16 @@ const { stages, lawId } = Astro.props;
 const venueLabels: Record<string, string> = {
   pleno: 'Pleno',
   'comision-permanente': 'Comisión Permanente',
+};
+
+const provenanceLabel: Record<VoteStageProvenance, string> = {
+  acta_oficial: 'Desglose por bancada alineado al acta nominal del Congreso (transcripción manual del PDF).',
+  acta_total_solamente:
+    'Solo figura el total oficial de la votación; el portal no publica PDF de asistencia de esta instancia o el acta no fue transcrita nominalmente.',
+  fuente_secundaria:
+    'Desglose por bancada a partir de reconstrucción en prensa especializada / informes; contrastado con el total del acta o comunicación del Pleno.',
+  estimacion_proporcional:
+    'Distribución por bancada calculada en proporción al patrón de otra votación del mismo periodo, ajustada al total oficial de esta etapa (ver README).',
 };
 
 function formatDate(iso: string): string {
@@ -50,7 +60,10 @@ function getStageTotals(stage: VoteStage) {
 {stages.length > 1 ? (
   <div class="vote-stages mt-6" data-stages-id={lawId}>
     {/* Stage summary strip */}
-    <div class="mb-4 grid gap-2 sm:grid-cols-{stages.length}">
+    <div
+      class="mb-4 grid gap-2"
+      style={`grid-template-columns: repeat(${stages.length}, minmax(0, 1fr))`}
+    >
       {stages.map((stage) => {
         const totals = getStageTotals(stage);
         return (
@@ -92,11 +105,29 @@ function getStageTotals(stage: VoteStage) {
         data-stage-panel={`${lawId}-stage-${i}`}
       >
         <VoteDisplay votes={stage.votes} lawId={`${lawId}-stage-${i}`} />
+        {(stage.dataProvenance || stage.sourceNote) && (
+          <div class="mt-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+            {stage.dataProvenance && (
+              <p class="font-medium text-slate-700">{provenanceLabel[stage.dataProvenance]}</p>
+            )}
+            {stage.sourceNote && <p class={stage.dataProvenance ? 'mt-1' : ''}>{stage.sourceNote}</p>}
+          </div>
+        )}
       </div>
     ))}
   </div>
 ) : stages.length === 1 ? (
-  <VoteDisplay votes={stages[0].votes} lawId={lawId} />
+  <div>
+    <VoteDisplay votes={stages[0].votes} lawId={lawId} />
+    {(stages[0].dataProvenance || stages[0].sourceNote) && (
+      <div class="mt-3 rounded-md border border-slate-100 bg-slate-50 px-3 py-2 text-xs leading-relaxed text-slate-600">
+        {stages[0].dataProvenance && (
+          <p class="font-medium text-slate-700">{provenanceLabel[stages[0].dataProvenance]}</p>
+        )}
+        {stages[0].sourceNote && <p class={stages[0].dataProvenance ? 'mt-1' : ''}>{stages[0].sourceNote}</p>}
+      </div>
+    )}
+  </div>
 ) : null}
 
 <style>

@@ -1,13 +1,16 @@
 ---
 /**
- * leyes-procrimen.astro — Analysis page for the 6 "Leyes Pro-Crimen".
+ * leyes-procrimen.astro — Long-form report: 6 "Leyes Pro-Crimen".
  *
- * Covers the six laws identified by Peru's Ministerio Público and
- * Convoca.pe as weakening the criminal prosecution system. Each law
- * includes multi-stage vote progression, contextual narrative, and
- * links to the original scanned vote record PDFs hosted on this site.
+ * Route: /leyes-procrimen (peer to /leyes-de-gasto). Site hub: /. Header highlights this page
+ * when currentPage="procrimen".
  *
- * Data sources documented in src/data/pro-crime-laws.ts.
+ * Covers the six laws identified by Peru's Ministerio Público and Convoca.pe as weakening the
+ * criminal prosecution system. Each law includes multi-stage vote progression, contextual narrative,
+ * and links to the original scanned vote record PDFs hosted on this site.
+ *
+ * Vote data: src/data/pro-crime-laws.ts, pro-crime-stages-votes.ts; methodology README
+ * in public/documentos/votaciones-procrimen/README.md.
  */
 
 import Layout from '../components/Layout.astro';
@@ -244,10 +247,12 @@ const summaryData = JSON.stringify(
         <div class="mt-6 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
           <p class="font-semibold">Nota sobre los datos</p>
           <p class="mt-1">
-            Los totales de votos provienen de fuentes secundarias verificadas (Convoca.pe,
-            La República, Infobae, Wikipedia). Las actas originales del Pleno son documentos
-            escaneados sin texto extraíble. Los PDF fuente están disponibles para descarga
-            al pie de cada ley para verificación independiente.
+            Cada etapa de votación incluye desglose por bancada (gráfico y tabla), con una
+            nota de procedencia bajo el gráfico: transcripción desde acta, total oficial
+            sin desglose nominal, reconstrucción desde prensa, o reparto proporcional al
+            total oficial cuando el PDF es imagen. Los PDF del Congreso están enlazados al
+            pie de cada ley; la matriz metodológica completa está en
+            <code class="rounded bg-amber-100 px-1">public/documentos/votaciones-procrimen/README.md</code>.
           </p>
         </div>
       </section>
@@ -328,7 +333,7 @@ const summaryData = JSON.stringify(
           de soles, en vísperas de las elecciones generales.
         </p>
         <a
-          href="/"
+          href="/leyes-de-gasto"
           class="mt-4 inline-flex items-center gap-2 rounded-lg bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-slate-700"
         >
           Ver análisis de Leyes de Gasto
@@ -339,7 +344,7 @@ const summaryData = JSON.stringify(
       </section>
     </main>
 
-    <Footer />
+    <Footer reportContext="procrimen" />
   </div>
 </Layout>
 

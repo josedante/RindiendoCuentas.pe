@@ -34,13 +34,24 @@ Este sitio transforma informes analíticos sobre el comportamiento legislativo d
 - **[Chart.js](https://www.chartjs.org/) v4** — Gráficos interactivos de barras horizontales apiladas
 - **TypeScript** — Datos de votación tipados
 
+## Arquitectura de información (rutas públicas)
+
+| Ruta | Contenido |
+|------|-----------|
+| `/` | Hub del sitio: acceso equilibrado a los dos informes |
+| `/leyes-de-gasto` | Informe largo — 5 leyes de expansión del gasto (marzo 2026) |
+| `/leyes-procrimen` | Informe largo — 6 leyes pro-crimen (2023–2024) |
+
+**Cambio relevante para enlaces antiguos:** antes el informe de gasto vivía en `/`. Ahora `/` es solo el hub; el texto completo de ese informe está en `/leyes-de-gasto`. Los fragmentos tipo `/#comparacion` dejaron de apuntar al informe de gasto.
+
 ## Estructura del proyecto
 
 ```
 src/
   components/
     Layout.astro              # HTML base, meta tags, JSON-LD, global CSS
-    Header.astro              # Barra de navegación superior fija con cross-page nav
+    Header.astro              # Barra superior: logo → hub, nav a ambos informes, TOC móvil en reportes
+    SiteHome.astro            # Cuerpo del hub (/) — dos tarjetas con CTAs a los informes
     HeroSection.astro         # Sección hero con estadísticas resumen (gasto)
     TableOfContents.astro     # Sidebar fijo (desktop) / drawer (mobile) con scroll-spy
     LawSection.astro          # Wrapper reutilizable para cada ley
@@ -51,14 +62,17 @@ src/
     SourceDocuments.astro     # Links de descarga de PDFs fuente
     ComparisonChart.astro     # Gráfico comparativo entre leyes (gasto)
     CollapsibleText.astro     # Sección expandible (<details>/<summary>)
-    Footer.astro              # Pie de página con fuentes y créditos
+    Footer.astro              # Pie: metodología (sitio vs por informe), fuentes, créditos
   data/
     types.ts                  # Interfaces TypeScript (PartyVote, Law, VoteStage, etc.)
     laws.ts                   # Datos de votación — 5 leyes de gasto + helpers
-    pro-crime-laws.ts         # Datos de votación — 6 leyes pro-crimen + helpers
+    pro-crime-laws.ts         # 6 leyes pro-crimen + etapas, notas de procedencia
+    pro-crime-stages-votes.ts # Matrices PartyVote[] por etapa (procrimen)
+    procrimen-bancada-mapping.ts # Orden y equivalencias de nombres de bancada
   pages/
-    index.astro               # Leyes de gasto público (marzo 2026)
-    leyes-procrimen.astro     # Leyes pro-crimen (2023–2024)
+    index.astro               # Hub (/) — enlaces a los dos informes largos
+    leyes-de-gasto.astro      # Informe largo — leyes de gasto (marzo 2026)
+    leyes-procrimen.astro     # Informe largo — leyes pro-crimen (2023–2024)
   styles/
     global.css                # Tailwind CSS + tokens de diseño + tipografía
 public/
@@ -91,11 +105,17 @@ npm run preview
 
 Array tipado de objetos `Law` con datos de votación por bancada para las 5 leyes de gasto. Fuentes: Actas del Pleno, comunicaciones del Congreso, Diario Oficial El Peruano.
 
-### Leyes pro-crimen (`src/data/pro-crime-laws.ts`)
+### Leyes pro-crimen (`src/data/pro-crime-laws.ts` + `pro-crime-stages-votes.ts`)
 
-Array tipado de objetos `Law` con soporte para múltiples etapas de votación (`voteStages`) y documentos fuente (`sourceDocuments`). Los datos agregados provienen de fuentes secundarias verificadas (los PDFs originales son imágenes escaneadas sin texto extraíble).
+Misma estructura `Law` que gasto, con **desglose por bancada en cada etapa** cuando hay
+totales oficiales: los arreglos `PartyVote[]` están en `pro-crime-stages-votes.ts`.
+Cada `VoteStage` puede incluir `dataProvenance` y `sourceNote` (mostrados bajo el gráfico).
 
-Para agregar datos de futuras votaciones, crear un nuevo objeto `Law` siguiendo la misma estructura y agregarlo al array correspondiente.
+Documentación de qué etapa usa transcripción, total solamente o reparto proporcional:
+`public/documentos/votaciones-procrimen/README.md`.
+
+Para nuevas votaciones: añadir filas en `pro-crime-stages-votes.ts`, referenciarlas en
+`pro-crime-laws.ts` y actualizar la matriz del README de `votaciones-procrimen`.
 
 ### Fuentes de datos
 
@@ -106,10 +126,9 @@ Para agregar datos de futuras votaciones, crear un nuevo objeto `Law` siguiendo 
 - Plataforma del Estado Peruano (gob.pe)
 
 **Leyes pro-crimen:**
-- Actas de Asistencia y Votación del Pleno (PDFs escaneados, hospedados en `/documentos/votaciones-procrimen/`)
-- Convoca.pe: "17 congresistas votaron de manera reiterada a favor de leyes procrimen"
-- Human Rights Watch: "Legislar para la Impunidad" (julio 2025)
-- La República, Infobae Peru, Wikipedia (per-party data where available)
+- Actas de Asistencia y Votación del Pleno (PDFs en `/documentos/votaciones-procrimen/`, ver README de esa carpeta)
+- Desglose por bancada: transcripción / proporcional / fuente secundaria según etapa
+- Convoca.pe, HRW, La República, Infobae (contexto y verificación cruzada)
 
 ## Despliegue
 

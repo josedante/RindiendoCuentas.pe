@@ -1,10 +1,20 @@
 ---
 /**
- * Footer.astro — Site footer with methodology note, sources, and credits.
+ * Footer.astro — Site footer: methodology blurb, primary sources, credits.
  *
- * Lists the primary sources used for vote data reconstruction
- * and provides a disclaimer about the nature of the analysis.
+ * @prop variant — 'site' = neutral copy for the hub (no single-report date range).
+ *                 'report' (default) = methodology tied to a specific investigation.
+ * @prop reportContext — When variant is 'report', which report's period to mention in the methodology paragraph.
+ *
+ * Usage: hub uses variant="site"; longform pages use default or reportContext="procrimen".
  */
+
+interface Props {
+  variant?: 'site' | 'report';
+  reportContext?: 'gasto' | 'procrimen';
+}
+
+const { variant = 'report', reportContext = 'gasto' } = Astro.props;
 
 const sources = [
   { label: 'Asistencia y Votaciones del Pleno', url: 'https://www.congreso.gob.pe/labor-legislativa/asistencias-votaciones-y-descuentos-por-inasistencias/asistencia-y-votaciones-a-las-sesiones-del-pleno/' },
@@ -12,6 +22,19 @@ const sources = [
   { label: 'Diario Oficial El Peruano', url: 'https://elperuano.pe/' },
   { label: 'Plataforma del Estado Peruano', url: 'https://www.gob.pe/' },
 ];
+
+const methodologySite =
+  'Cada informe del sitio reconstruye las votaciones a partir de actas del Pleno, resoluciones legislativas y el Diario de los Debates del Congreso, según el periodo indicado en esa sección. Los enlaces de esta página listan las fuentes primarias habituales.';
+
+const methodologyReport: Record<'gasto' | 'procrimen', string> = {
+  gasto:
+    'Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno, las resoluciones legislativas, y el Diario de los Debates del Congreso de la República del Perú. Los registros corresponden a las sesiones plenarias del mes de marzo de 2026.',
+  procrimen:
+    'Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno y documentación asociada del Congreso de la República del Perú. Los registros cubren las etapas legislativas de las leyes analizadas (2023–2024), con notas de procedencia por etapa donde aplica.',
+};
+
+const methodologyParagraph =
+  variant === 'site' ? methodologySite : methodologyReport[reportContext];
 
 const currentYear = new Date().getFullYear();
 ---
@@ -22,9 +45,7 @@ const currentYear = new Date().getFullYear();
     <div class="mb-8">
       <h3 class="text-sm font-bold uppercase tracking-wider text-slate-900">Metodología</h3>
       <p class="mt-2 text-sm leading-relaxed text-slate-600">
-        Los datos de votación fueron reconstruidos a partir de las actas oficiales del Pleno,
-        las resoluciones legislativas, y el Diario de los Debates del Congreso de la República
-        del Perú. Los registros corresponden a las sesiones plenarias del mes de marzo de 2026.
+        {methodologyParagraph}
       </p>
     </div>
 
